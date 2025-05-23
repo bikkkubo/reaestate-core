@@ -78,19 +78,30 @@ export function DealCard({ deal, isCompleted = false }: DealCardProps) {
             {deal.client && (
               <div className="flex items-center">
                 <i className="fas fa-user mr-1"></i>
-                <span>{deal.client}</span>
+                <span className="text-sm font-semibold text-gray-700">{deal.client}</span>
               </div>
             )}
             
             {!isCompleted && (
               <div className="flex items-center justify-between">
-                <span className={`px-2 py-1 rounded text-xs ${
-                  isOverdue 
-                    ? "bg-red-50 text-red-600" 
-                    : "text-gray-500"
-                }`}>
-                  {getRelativeTime()}
-                </span>
+                <div className="flex flex-col">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    isOverdue 
+                      ? "bg-red-50 text-red-600" 
+                      : daysUntilDue <= 3
+                      ? "bg-orange-50 text-orange-600"
+                      : "bg-gray-50 text-gray-600"
+                  }`}>
+                    {getRelativeTime()}
+                  </span>
+                  {!isOverdue && (
+                    <span className="text-xs text-gray-500 mt-1">
+                      {daysUntilDue === 0 ? "今日が期限" : 
+                       daysUntilDue === 1 ? "明日が期限" :
+                       `あと${daysUntilDue}日`}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
           </div>
