@@ -67,7 +67,7 @@ export function DealCard({ deal, isCompleted = false }: DealCardProps) {
           <div className="text-xs text-gray-600 space-y-1">
             <div className="flex items-center">
               <i className={`fas mr-1 ${isCompleted ? "fa-check" : "fa-calendar-alt"}`}></i>
-              <span>
+              <span className="text-sm font-bold text-gray-800">
                 {isCompleted 
                   ? `${format(dueDate, "yyyy/MM/dd", { locale: ja })} 完了`
                   : format(dueDate, "yyyy/MM/dd", { locale: ja })
