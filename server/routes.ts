@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertDealSchema } from "@shared/schema";
 import { z } from "zod";
+import { triggerManualReminders } from "./notifications";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all deals
@@ -101,6 +102,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching metadata:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Manual trigger for Slack reminders (for testing)
+  app.post("/api/notifications/test", async (req, res) => {
+    try {
+      const result = await triggerManualReminders();
+      res.json({ 
+        message: "Test reminders sent", 
+        sentCount: result.sent,
+        deals: result.deals.map(d => ({ id: d.id, title: d.title, dueDate: d.dueDate }))
+      });
+    } catch (error) {
+      console.error("Error sending test reminders:", error);
+      res.status(500).json({ message: "Failed to send test reminders" });
     }
   });
 

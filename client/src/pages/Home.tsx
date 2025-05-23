@@ -26,6 +26,22 @@ export default function Home() {
                 <span>同期完了</span>
               </div>
               <Button
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/notifications/test', { method: 'POST' });
+                    const result = await response.json();
+                    alert(`Slack通知テスト完了: ${result.sentCount}件の案件に通知を送信しました`);
+                  } catch (error) {
+                    alert('Slack通知の送信に失敗しました');
+                  }
+                }}
+                variant="outline"
+                className="text-orange-600 border-orange-600 hover:bg-orange-50"
+              >
+                <i className="fas fa-bell text-sm mr-2"></i>
+                <span className="hidden sm:block">Slack通知テスト</span>
+              </Button>
+              <Button
                 onClick={() => setIsAddModalOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
               >
