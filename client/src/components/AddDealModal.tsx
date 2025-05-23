@@ -1,0 +1,229 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { insertDealSchema, InsertDeal } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
+
+interface AddDealModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function AddDealModal({ open, onClose }: AddDealModalProps) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const form = useForm<InsertDeal>({
+    resolver: zodResolver(insertDealSchema),
+    defaultValues: {
+      title: "",
+      client: "",
+      priority: "中",
+      phase: "①申込連絡",
+      dueDate: "",
+      notes: "",
+    },
+  });
+
+  const addDealMutation = useMutation({
+    mutationFn: async (data: InsertDeal) => {
+      const response = await apiRequest("POST", "/api/deals", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/deals"] });
+      toast({
+        title: "成功",
+        description: "新規案件を追加しました",
+      });
+      form.reset();
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "エラー",
+        description: "案件の追加に失敗しました",
+      });
+    },
+  });
+
+  const onSubmit = (data: InsertDeal) => {
+    addDealMutation.mutate(data);
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      form.setValue("dueDate", date.toISOString().split('T')[0]);
+    }
+  };
+
+  // Set default due date to one week from today
+  const getDefaultDueDate = () => {
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    return nextWeek;
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>新規案件追加</DialogTitle>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>案件名 <span className="text-red-500">*</span></FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="例：渋谷区マンション 3LDK"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="client"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>顧客名</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="例：田中様"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>緊急度 <span className="text-red-500">*</span></FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="選択してください" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="高">高 - 緊急対応が必要</SelectItem>
+                      <SelectItem value="中">中 - 通常対応</SelectItem>
+                      <SelectItem value="低">低 - 余裕をもって対応</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>期日 <span className="text-red-500">*</span></FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      date={field.value ? new Date(field.value) : getDefaultDueDate()}
+                      onDateChange={handleDateChange}
+                      placeholder="期日を選択してください"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>メモ（任意）</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="追加情報や特記事項があれば入力してください"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end space-x-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={addDealMutation.isPending}
+              >
+                キャンセル
+              </Button>
+              <Button
+                type="submit"
+                disabled={addDealMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {addDealMutation.isPending ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin mr-2"></i>
+                    追加中...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-plus mr-2"></i>
+                    案件を追加
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
