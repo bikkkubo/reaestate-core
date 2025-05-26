@@ -45,7 +45,9 @@ export const PHASES = [
   "⑦鍵渡し準備",
   "⑧入居開始",
   "⑨管理開始",
-  "⑩契約終了"
+  "⑩契約終了",
+  "⑪フォローアップ",
+  "⑫AD請求/着金"
 ] as const;
 
 export type Phase = typeof PHASES[number];

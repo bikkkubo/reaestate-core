@@ -74,15 +74,16 @@ export function KanbanBoard() {
 
   const getPhaseStats = () => {
     const total = deals.length;
-    const inProgress = deals.filter(deal => deal.phase !== "⑩契約終了").length;
+    const inProgress = deals.filter(deal => !["⑩契約終了", "⑪フォローアップ", "⑫AD請求/着金"].includes(deal.phase)).length;
     const overdue = deals.filter(deal => {
       const dueDate = new Date(deal.dueDate);
       const today = new Date();
-      return dueDate < today && deal.phase !== "⑩契約終了";
+      return dueDate < today && !["⑩契約終了", "⑪フォローアップ", "⑫AD請求/着金"].includes(deal.phase);
     }).length;
-    const completed = deals.filter(deal => deal.phase === "⑩契約終了").length;
+    const followUp = deals.filter(deal => deal.phase === "⑪フォローアップ").length;
+    const completed = deals.filter(deal => deal.phase === "⑫AD請求/着金").length;
 
-    return { total, inProgress, overdue, completed };
+    return { total, inProgress, overdue, followUp, completed };
   };
 
   const stats = getPhaseStats();
@@ -94,14 +95,14 @@ export function KanbanBoard() {
   return (
     <div className="p-4">
       {/* Stats Bar */}
-      <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="mb-6 grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">総案件数</p>
+              <p className="text-sm text-gray-600">総顧客数</p>
               <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
             </div>
-            <i className="fas fa-clipboard-list text-blue-500 text-xl"></i>
+            <i className="fas fa-users text-blue-500 text-xl"></i>
           </div>
         </div>
         
@@ -128,6 +129,16 @@ export function KanbanBoard() {
         <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
+              <p className="text-sm text-gray-600">フォローアップ</p>
+              <p className="text-2xl font-semibold text-purple-600">{stats.followUp}</p>
+            </div>
+            <i className="fas fa-heart text-purple-500 text-xl"></i>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
               <p className="text-sm text-gray-600">完了</p>
               <p className="text-2xl font-semibold text-green-600">{stats.completed}</p>
             </div>
@@ -142,7 +153,9 @@ export function KanbanBoard() {
           <div className="flex space-x-4 min-w-max">
             {PHASES.map((phase) => {
               const phaseDeals = getDealsByPhase(phase);
-              const isCompleted = phase === "⑩契約終了";
+              const isCompleted = phase === "⑫AD請求/着金";
+              const isFollowUp = phase === "⑪フォローアップ";
+              const isContractEnd = phase === "⑩契約終了";
               
               return (
                 <div
@@ -150,13 +163,19 @@ export function KanbanBoard() {
                   className="flex-shrink-0 w-80 bg-white rounded-lg shadow-sm border border-gray-200"
                 >
                   <div className={`p-4 border-b border-gray-200 rounded-t-lg ${
-                    isCompleted ? "bg-green-50" : "bg-gray-50"
+                    isCompleted ? "bg-green-50" : 
+                    isFollowUp ? "bg-purple-50" :
+                    isContractEnd ? "bg-blue-50" : "bg-gray-50"
                   }`}>
                     <div className="flex items-center justify-between">
                       <h3 className="font-medium text-gray-900">{phase}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         isCompleted 
                           ? "bg-green-200 text-green-800" 
+                          : isFollowUp
+                          ? "bg-purple-200 text-purple-800"
+                          : isContractEnd
+                          ? "bg-blue-200 text-blue-800"
                           : "bg-gray-200 text-gray-700"
                       }`}>
                         {phaseDeals.length}

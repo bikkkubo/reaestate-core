@@ -47,11 +47,20 @@ export function DealCard({ deal, isCompleted = false, onEdit }: DealCardProps) {
         <div className={`w-1 rounded-sm mr-3 ${getPriorityColor(deal.priority)}`}></div>
         <div className="flex-1">
           <div className="flex items-start justify-between mb-2">
-            <h4 className={`font-medium text-sm text-gray-900 ${
-              isCompleted ? "line-through text-gray-600" : ""
-            }`}>
-              {deal.title}
-            </h4>
+            <div className="flex-1">
+              <h4 className={`font-semibold text-base text-gray-900 ${
+                isCompleted ? "line-through text-gray-600" : ""
+              }`}>
+                {deal.client || "未設定の顧客"}
+              </h4>
+              {deal.title && (
+                <p className={`text-sm text-gray-600 mt-1 ${
+                  isCompleted ? "line-through" : ""
+                }`}>
+                  {deal.title}
+                </p>
+              )}
+            </div>
             <div className="flex items-center space-x-1 ml-2">
               {!isCompleted && (
                 <>
@@ -96,10 +105,21 @@ export function DealCard({ deal, isCompleted = false, onEdit }: DealCardProps) {
               </span>
             </div>
             
-            {deal.client && (
+            {deal.phase === "⑪フォローアップ" && (
+              <div className="bg-blue-50 p-2 rounded text-xs mb-2">
+                <div className="font-medium text-blue-900 mb-1">フォローアップ内容:</div>
+                <div className="text-blue-800 space-y-1">
+                  <div>• ライフライン契約サポート</div>
+                  <div>• 引っ越し祝い送付</div>
+                  {deal.notes && <div>• {deal.notes}</div>}
+                </div>
+              </div>
+            )}
+
+            {deal.title && (
               <div className="flex items-center">
-                <i className="fas fa-user mr-1"></i>
-                <span className="text-sm font-semibold text-gray-700">{deal.client}</span>
+                <i className="fas fa-building mr-1"></i>
+                <span className="text-sm text-gray-600">{deal.title}</span>
               </div>
             )}
             
