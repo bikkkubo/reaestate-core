@@ -180,6 +180,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // LINE Webhook endpoint - 顧客からのメッセージを受信
   app.post("/api/line/webhook", async (req, res) => {
     try {
+      // アクセス可能なURLを出力
+      const host = req.get('host');
+      const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+      const webhookUrl = `${protocol}://${host}/api/line/webhook`;
+      
+      console.log(`LINE Webhook accessed at: ${webhookUrl}`);
+      
       const { verifyLineSignature, handleLineWebhook } = await import("./line");
       
       // LINE署名検証
