@@ -5,9 +5,10 @@ import { ja } from "date-fns/locale";
 interface DealCardProps {
   deal: Deal;
   isCompleted?: boolean;
+  onEdit?: (deal: Deal) => void;
 }
 
-export function DealCard({ deal, isCompleted = false }: DealCardProps) {
+export function DealCard({ deal, isCompleted = false, onEdit }: DealCardProps) {
   const dueDate = new Date(deal.dueDate);
   const today = new Date();
   const isOverdue = isAfter(today, dueDate) && !isCompleted;
@@ -26,12 +27,22 @@ export function DealCard({ deal, isCompleted = false }: DealCardProps) {
     return `${Math.ceil(daysUntilDue / 30)}ヶ月後`;
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only trigger edit if clicking on the card itself, not during drag
+    if (onEdit && !e.defaultPrevented) {
+      onEdit(deal);
+    }
+  };
+
   return (
-    <div className={`border rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing ${
-      isCompleted 
-        ? "bg-gray-50 border-gray-200 opacity-75" 
-        : "bg-white border-gray-200"
-    }`}>
+    <div 
+      className={`group border rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing ${
+        isCompleted 
+          ? "bg-gray-50 border-gray-200 opacity-75" 
+          : "bg-white border-gray-200"
+      }`}
+      onClick={handleCardClick}
+    >
       <div className="flex">
         <div className={`w-1 rounded-sm mr-3 ${getPriorityColor(deal.priority)}`}></div>
         <div className="flex-1">
@@ -61,6 +72,16 @@ export function DealCard({ deal, isCompleted = false }: DealCardProps) {
               {isCompleted && (
                 <i className="fas fa-check-circle text-green-500 text-sm"></i>
               )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onEdit) onEdit(deal);
+                }}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-gray-100"
+                title="編集"
+              >
+                <i className="fas fa-edit text-xs text-gray-500 hover:text-blue-600"></i>
+              </button>
             </div>
           </div>
           

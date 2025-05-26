@@ -4,12 +4,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Deal, PHASES, Phase } from "@shared/schema";
 import { DealCard } from "./DealCard";
 import { LoadingOverlay } from "./LoadingOverlay";
+import { EditDealModal } from "./EditDealModal";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export function KanbanBoard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
 
   const { data: deals = [], isLoading } = useQuery<Deal[]>({
     queryKey: ["/api/deals"],
@@ -191,7 +193,11 @@ export function KanbanBoard() {
                                     snapshot.isDragging ? "rotate-3 opacity-80" : ""
                                   }`}
                                 >
-                                  <DealCard deal={deal} isCompleted={isCompleted} />
+                                  <DealCard 
+                                    deal={deal} 
+                                    isCompleted={isCompleted} 
+                                    onEdit={setEditingDeal}
+                                  />
                                 </div>
                               )}
                             </Draggable>
