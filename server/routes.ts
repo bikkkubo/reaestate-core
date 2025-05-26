@@ -133,6 +133,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LINE notification endpoints
+  
+  // Get LINE message template for a phase
+  app.get("/api/line/template/:phase", async (req, res) => {
+    try {
+      const { getMessageTemplate } = await import("./line");
+      const phase = decodeURIComponent(req.params.phase);
+      const template = getMessageTemplate(phase);
+      res.json({ template });
+    } catch (error) {
+      console.error("Error getting LINE template:", error);
+      res.status(500).json({ error: "Failed to get template" });
+    }
+  });
+
+  // Send LINE notification
+  app.post("/api/line/send", async (req, res) => {
+    try {
+      const { sendLinePushMessage } = await import("./line");
+      const { dealId, phase, message, lineUserId } = req.body;
+
+      if (!dealId || !phase || !message || !lineUserId) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Update deal with LINE User ID if provided
+      if (lineUserId) {
+        await storage.updateDeal(dealId, { lineUserId });
+      }
+
+      // Send LINE notification
+      const success = await sendLinePushMessage(lineUserId, message);
+      
+      if (success) {
+        res.json({ success: true, message: "LINE notification sent" });
+      } else {
+        res.status(500).json({ error: "Failed to send LINE notification" });
+      }
+    } catch (error) {
+      console.error("Error sending LINE notification:", error);
+      res.status(500).json({ error: "Failed to send notification" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
