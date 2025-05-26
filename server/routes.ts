@@ -191,10 +191,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // すべてのリクエストをログ出力（デバッグ用）
+  // 全リクエストをログ出力（完全デバッグ）
   app.use((req, res, next) => {
+    // すべてのPOSTリクエストをログ
+    if (req.method === 'POST') {
+      console.log(`📨 [${new Date().toISOString()}] POST ${req.path}`);
+      console.log('📨 Headers:', JSON.stringify(req.headers, null, 2));
+      console.log('📨 Body:', JSON.stringify(req.body, null, 2));
+    }
+    
+    // LINE関連のリクエストは特別にマーク
     if (req.path.includes('/api/line/')) {
-      console.log(`🔍 [${new Date().toISOString()}] ${req.method} ${req.path}`);
+      console.log(`🔍 [${new Date().toISOString()}] LINE ${req.method} ${req.path}`);
       console.log('🔍 Headers:', JSON.stringify(req.headers, null, 2));
       console.log('🔍 Body:', JSON.stringify(req.body, null, 2));
     }
