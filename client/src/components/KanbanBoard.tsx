@@ -93,10 +93,11 @@ export function KanbanBoard() {
   }
 
   return (
-    <div className="p-4">
+    <div className="w-full">
       {/* Stats Bar */}
-      <div className="mb-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+      <div className="px-4 py-4">
+        <div className="mb-6 grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">総顧客数</p>
@@ -145,12 +146,13 @@ export function KanbanBoard() {
             <i className="fas fa-check-circle text-green-500 text-xl"></i>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Kanban Board */}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="overflow-x-auto pb-4">
-          <div className="flex space-x-4 min-w-max">
+      <div className="w-full overflow-x-auto pb-4">
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="flex space-x-4 min-w-max px-4">
             {PHASES.map((phase) => {
               const phaseDeals = getDealsByPhase(phase);
               const isCompleted = phase === "⑫AD請求/着金";
@@ -230,8 +232,8 @@ export function KanbanBoard() {
               );
             })}
           </div>
-        </div>
-      </DragDropContext>
+        </DragDropContext>
+      </div>
 
       {/* Edit Deal Modal */}
       <EditDealModal
