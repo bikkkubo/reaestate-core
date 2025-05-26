@@ -191,6 +191,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // すべてのリクエストをログ出力（デバッグ用）
+  app.use((req, res, next) => {
+    if (req.path.includes('/api/line/')) {
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+      console.log('Headers:', req.headers);
+      console.log('Body:', req.body);
+    }
+    next();
+  });
+
   // LINE Webhook endpoint - 顧客からのメッセージを受信
   app.post("/api/line/webhook", async (req, res) => {
     try {
@@ -199,9 +209,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
       const webhookUrl = `${protocol}://${host}/api/line/webhook`;
       
-      console.log(`LINE Webhook accessed at: ${webhookUrl}`);
-      console.log('Webhook headers:', req.headers);
-      console.log('Webhook body:', req.body);
+      console.log(`🔥 LINE Webhook ACCESSED at: ${webhookUrl}`);
+      console.log('🔥 Webhook headers:', req.headers);
+      console.log('🔥 Webhook body:', req.body);
       
       const { verifyLineSignature, handleLineWebhook } = await import("./line");
       
