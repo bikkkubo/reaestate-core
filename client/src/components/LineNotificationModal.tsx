@@ -78,6 +78,7 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
           .replace(/{dueDate}/g, deal.dueDate || "");
         
         setMessage(template);
+        // LINE連携済みの場合は自動でUser IDを入力
         setLineUserId(deal.lineUserId || "");
       });
     }
