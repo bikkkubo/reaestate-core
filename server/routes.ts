@@ -194,9 +194,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // すべてのリクエストをログ出力（デバッグ用）
   app.use((req, res, next) => {
     if (req.path.includes('/api/line/')) {
-      console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-      console.log('Headers:', req.headers);
-      console.log('Body:', req.body);
+      console.log(`🔍 [${new Date().toISOString()}] ${req.method} ${req.path}`);
+      console.log('🔍 Headers:', JSON.stringify(req.headers, null, 2));
+      console.log('🔍 Body:', JSON.stringify(req.body, null, 2));
     }
     next();
   });

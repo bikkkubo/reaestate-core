@@ -122,6 +122,13 @@ export function DealCard({ deal, isCompleted = false, onEdit }: DealCardProps) {
                 <span className="text-sm text-gray-600">{deal.title}</span>
               </div>
             )}
+
+            {deal.lineUserId && (
+              <div className="flex items-center">
+                <i className="fab fa-line mr-1 text-green-600"></i>
+                <span className="text-xs text-green-600">LINE連携済み</span>
+              </div>
+            )}
             
             {!isCompleted && (
               <div className="flex items-center justify-between">

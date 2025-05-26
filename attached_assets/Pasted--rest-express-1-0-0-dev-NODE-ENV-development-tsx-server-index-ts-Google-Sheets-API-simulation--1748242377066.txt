@@ -1,0 +1,57 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Google Sheets API simulation: create deal 1 - 
+Google Sheets API simulation: create deal 2 - 新宿区オフィスビル 5階
+Google Sheets API simulation: create deal 3 - 港区高級マンション 20階
+Google Sheets API simulation: create deal 4 - 品川区駅近アパート
+Google Sheets API simulation: create deal 5 - 
+Google Sheets API simulation: create deal 6 - 目黒区ワンルーム A202
+Due date reminders scheduled for: 2025/5/26 9:00:00
+Found 1 deals due in 2 days, sending Slack reminders...
+[WARN]  web-api:WebClient:0 The top-level `text` argument is missing in the request payload for a chat.postMessage call - It's a best practice to always provide a `text` argument when posting a message. The `text` is used in places where the content cannot be rendered such as: system push notifications, assistive technology such as screen readers, etc.
+6:48:27 AM [express] serving on port 5000
+[WARN]  web-api:WebClient:0 The top-level `text` argument is missing in the request payload for a chat.postMessage call - It's a best practice to always provide a `text` argument when posting a message. The `text` is used in places where the content cannot be rendered such as: system push notifications, assistive technology such as screen readers, etc.
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Slack reminder sent for deal:  (2 days until due)
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+117|  
+118|  /* Font Awesome icons */
+119|  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+120|  
+121|  /* Japanese fonts */
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+120|  
+121|  /* Japanese fonts */
+122|  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+123|  
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+117|  
+118|  /* Font Awesome icons */
+119|  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+120|  
+121|  /* Japanese fonts */
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+120|  
+121|  /* Japanese fonts */
+122|  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+123|  
+6:48:30 AM [vite] warning: Duplicate key "onError" in object literal
+58 |        return { previousDeals };
+59 |      },
+60 |      onError: (err, variables, context) => {
+   |      ^
+61 |        if (context?.previousDeals) {
+62 |          queryClient.setQueryData(["/api/deals"], context.previousDeals);
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/components/KanbanBoard.tsx
+6:48:31 AM [express] GET /api/deals 200 in 3ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+6:48:32 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
