@@ -10,6 +10,7 @@ export const deals = pgTable("deals", {
   phase: text("phase").notNull(), // Current phase name
   dueDate: text("due_date").notNull(), // ISO date string
   notes: text("notes"),
+  lineUserId: text("line_user_id"), // LINE User ID for notifications
   sheetRowIndex: integer("sheet_row_index"), // Google Sheets row number
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -22,6 +23,7 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   phase: true,
   dueDate: true,
   notes: true,
+  lineUserId: true,
 }).extend({
   title: z.string().min(3, "案件名は3文字以上で入力してください"),
   priority: z.enum(["高", "中", "低"], { required_error: "緊急度を選択してください" }),
@@ -29,6 +31,7 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   dueDate: z.string().min(1, "期日を選択してください"),
   client: z.string().optional(),
   notes: z.string().optional(),
+  lineUserId: z.string().optional(),
 });
 
 export type InsertDeal = z.infer<typeof insertDealSchema>;
