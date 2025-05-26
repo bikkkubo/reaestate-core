@@ -48,8 +48,8 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
     defaultValues: {
       title: "",
       client: "",
-      priority: "中" as const,
-      phase: "①申込連絡" as const,
+      priority: "中",
+      phase: "①申込連絡",
       dueDate: "",
       notes: "",
     },
@@ -61,7 +61,7 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
       form.reset({
         title: deal.title,
         client: deal.client || "",
-        priority: deal.priority as "高" | "中" | "低",
+        priority: deal.priority,
         phase: deal.phase,
         dueDate: deal.dueDate,
         notes: deal.notes || "",

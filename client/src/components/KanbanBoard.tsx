@@ -213,6 +213,13 @@ export function KanbanBoard() {
           </div>
         </div>
       </DragDropContext>
+
+      {/* Edit Deal Modal */}
+      <EditDealModal
+        deal={editingDeal}
+        open={!!editingDeal}
+        onClose={() => setEditingDeal(null)}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ export interface IStorage {
   getDeal(id: number): Promise<Deal | undefined>;
   createDeal(deal: InsertDeal): Promise<Deal>;
   updateDealPhase(id: number, phase: string): Promise<Deal | undefined>;
+  updateDeal(id: number, updates: Partial<InsertDeal>): Promise<Deal | undefined>;
   deleteDeal(id: number): Promise<boolean>;
   syncWithGoogleSheets(): Promise<{ synced: number; errors: string[] }>;
   getMetadata(): Promise<{ phases: string[] }>;
@@ -92,6 +93,8 @@ export class MemStorage implements IStorage {
     const deal: Deal = {
       ...insertDeal,
       id,
+      client: insertDeal.client || null,
+      notes: insertDeal.notes || null,
       sheetRowIndex: null,
       createdAt: now,
       updatedAt: now,
@@ -111,6 +114,25 @@ export class MemStorage implements IStorage {
     const updatedDeal: Deal = {
       ...deal,
       phase,
+      updatedAt: new Date(),
+    };
+    this.deals.set(id, updatedDeal);
+    
+    // Simulate Google Sheets API call
+    this.simulateGoogleSheetsSync("update", updatedDeal);
+    
+    return updatedDeal;
+  }
+
+  async updateDeal(id: number, updates: Partial<InsertDeal>): Promise<Deal | undefined> {
+    const deal = this.deals.get(id);
+    if (!deal) return undefined;
+
+    const updatedDeal: Deal = {
+      ...deal,
+      ...updates,
+      client: updates.client !== undefined ? updates.client : deal.client,
+      notes: updates.notes !== undefined ? updates.notes : deal.notes,
       updatedAt: new Date(),
     };
     this.deals.set(id, updatedDeal);
