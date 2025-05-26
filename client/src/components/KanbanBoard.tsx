@@ -5,6 +5,7 @@ import { Deal, PHASES, Phase } from "@shared/schema";
 import { DealCard } from "./DealCard";
 import { LoadingOverlay } from "./LoadingOverlay";
 import { EditDealModal } from "./EditDealModal";
+import { LineNotificationModal } from "./LineNotificationModal";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,6 +13,10 @@ export function KanbanBoard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
+  const [lineNotificationData, setLineNotificationData] = useState<{
+    deal: Deal;
+    newPhase: string;
+  } | null>(null);
 
   const { data: deals = [], isLoading } = useQuery<Deal[]>({
     queryKey: ["/api/deals"],
@@ -64,8 +69,17 @@ export function KanbanBoard() {
 
     const dealId = parseInt(result.draggableId);
     const newPhase = result.destination.droppableId as Phase;
-    
+    const deal = deals.find(d => d.id === dealId);
+
+    if (!deal) return;
+
+    // まずフェーズを更新
     updatePhaseMutation.mutate({ id: dealId, phase: newPhase });
+
+    // LINE User IDが設定されている場合、LINE通知確認画面を表示
+    if (deal.lineUserId) {
+      setLineNotificationData({ deal, newPhase });
+    }
   };
 
   const getDealsByPhase = (phase: Phase): Deal[] => {
@@ -240,6 +254,14 @@ export function KanbanBoard() {
         deal={editingDeal}
         open={!!editingDeal}
         onClose={() => setEditingDeal(null)}
+      />
+
+      {/* LINE Notification Modal */}
+      <LineNotificationModal
+        deal={lineNotificationData?.deal || null}
+        newPhase={lineNotificationData?.newPhase || null}
+        open={!!lineNotificationData}
+        onClose={() => setLineNotificationData(null)}
       />
     </div>
   );

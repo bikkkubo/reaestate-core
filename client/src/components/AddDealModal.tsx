@@ -194,6 +194,30 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="lineUserId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <i className="fab fa-line text-green-500 mr-1"></i>
+                    LINE User ID（任意）
+                  </FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="顧客のLINE User ID"
+                      {...field}
+                      className="font-mono text-sm"
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    フェーズ変更時にLINE通知を送信する場合に入力してください
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="flex justify-end space-x-3 pt-4">
               <Button
                 type="button"
