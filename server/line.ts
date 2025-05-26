@@ -220,3 +220,122 @@ export function getMessageTemplate(phase: string): string {
 export function updateMessageTemplate(phase: string, template: string): void {
   LINE_MESSAGE_TEMPLATES[phase] = template;
 }
+
+/**
+ * LINE Webhook処理 - 顧客からのメッセージを受信
+ */
+export async function handleLineWebhook(body: any): Promise<boolean> {
+  try {
+    const events = body.events;
+    
+    for (const event of events) {
+      if (event.type === 'message' && event.message.type === 'text') {
+        const userId = event.source.userId;
+        const messageText = event.message.text.trim();
+        
+        // 顧客登録プロセスを処理
+        await processCustomerRegistration(userId, messageText);
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error handling LINE webhook:', error);
+    return false;
+  }
+}
+
+/**
+ * 顧客登録プロセス - 名前から案件を検索して紐付け
+ */
+async function processCustomerRegistration(userId: string, messageText: string): Promise<void> {
+  try {
+    const { storage } = await import('./storage');
+    
+    // 既に登録済みかチェック
+    const deals = await storage.getAllDeals();
+    const existingDeal = deals.find(deal => deal.lineUserId === userId);
+    
+    if (existingDeal) {
+      // 既に登録済みの場合、現在のステータスを通知
+      await sendLinePushMessage(userId, 
+        `${existingDeal.client}様、いつもお世話になっております。\n\n` +
+        `現在のお手続き状況：${existingDeal.phase}\n\n` +
+        `何かご不明点がございましたら、お気軽にお声かけください。`
+      );
+      return;
+    }
+    
+    // 名前で案件を検索（部分一致）
+    const matchingDeals = deals.filter(deal => 
+      deal.client && deal.client.includes(messageText)
+    );
+    
+    if (matchingDeals.length === 1) {
+      // 1件だけマッチした場合、自動で紐付け
+      const deal = matchingDeals[0];
+      await storage.updateDeal(deal.id, { lineUserId: userId });
+      
+      await sendLinePushMessage(userId,
+        `${deal.client}様、ご登録ありがとうございます！\n\n` +
+        `お客様の案件情報を確認いたしました。\n` +
+        `現在のお手続き状況：${deal.phase}\n\n` +
+        `今後、お手続きの進捗状況をこちらのLINEでお知らせいたします。\n` +
+        `よろしくお願いいたします。`
+      );
+      
+    } else if (matchingDeals.length > 1) {
+      // 複数マッチした場合、選択肢を提示
+      let message = `${messageText}様、ありがとうございます。\n\n` +
+        `複数の案件が見つかりました。該当する番号を送信してください：\n\n`;
+      
+      matchingDeals.forEach((deal, index) => {
+        message += `${index + 1}. ${deal.client}様 - ${deal.title || '物件情報準備中'}\n`;
+      });
+      
+      await sendLinePushMessage(userId, message);
+      
+      // 一時的に選択待ち状態を保存（実装簡略化のため、ここでは省略）
+      
+    } else {
+      // マッチしなかった場合、登録案内
+      await sendLinePushMessage(userId,
+        `お疲れ様です！\n\n` +
+        `お客様の情報を紐づけいたしますので、いくつかご質問をさせていただきます。\n\n` +
+        `Q.1 お客様のお名前（フルネーム）をお教えください\n\n` +
+        `例：田中太郎\n\n` +
+        `※既にお申込み済みのお名前をご入力ください。`
+      );
+    }
+    
+  } catch (error) {
+    console.error('Error processing customer registration:', error);
+    await sendLinePushMessage(userId,
+      `申し訳ございません。システムエラーが発生いたしました。\n` +
+      `お手数をおかけしますが、直接お電話にてお問い合わせください。`
+    );
+  }
+}
+
+/**
+ * LINE Webhook署名検証
+ */
+export function verifyLineSignature(body: string, signature: string): boolean {
+  try {
+    if (!process.env.LINE_CHANNEL_SECRET) {
+      console.log('LINE_CHANNEL_SECRET not configured');
+      return false;
+    }
+    
+    const crypto = require('crypto');
+    const hash = crypto
+      .createHmac('SHA256', process.env.LINE_CHANNEL_SECRET)
+      .update(body)
+      .digest('base64');
+    
+    return hash === signature;
+  } catch (error) {
+    console.error('Error verifying LINE signature:', error);
+    return false;
+  }
+}

@@ -177,6 +177,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LINE Webhook endpoint - 顧客からのメッセージを受信
+  app.post("/api/line/webhook", async (req, res) => {
+    try {
+      const { verifyLineSignature, handleLineWebhook } = await import("./line");
+      
+      // LINE署名検証
+      const signature = req.headers['x-line-signature'] as string;
+      const body = JSON.stringify(req.body);
+      
+      if (!verifyLineSignature(body, signature)) {
+        console.log('Invalid LINE signature');
+        return res.status(401).json({ error: "Invalid signature" });
+      }
+
+      // Webhookイベントを処理
+      const success = await handleLineWebhook(req.body);
+      
+      if (success) {
+        res.json({ success: true });
+      } else {
+        res.status(500).json({ error: "Failed to process webhook" });
+      }
+    } catch (error) {
+      console.error("Error handling LINE webhook:", error);
+      res.status(500).json({ error: "Webhook processing failed" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
