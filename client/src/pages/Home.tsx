@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { AddDealModal } from "@/components/AddDealModal";
+import { TemplateManagerModal } from "@/components/TemplateManagerModal";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
+  const [templateUpdateKey, setTemplateUpdateKey] = useState(0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -25,6 +28,14 @@ export default function Home() {
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span>同期完了</span>
               </div>
+              <Button
+                onClick={() => setIsTemplateManagerOpen(true)}
+                variant="outline"
+                className="text-purple-600 border-purple-600 hover:bg-purple-50"
+              >
+                <i className="fas fa-cog text-sm mr-2"></i>
+                <span className="hidden sm:block">テンプレート管理</span>
+              </Button>
               <Button
                 onClick={async () => {
                   try {
@@ -62,6 +73,13 @@ export default function Home() {
       <AddDealModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+      />
+
+      {/* Template Manager Modal */}
+      <TemplateManagerModal
+        open={isTemplateManagerOpen}
+        onClose={() => setIsTemplateManagerOpen(false)}
+        onTemplateUpdate={() => setTemplateUpdateKey(prev => prev + 1)}
       />
     </div>
   );
