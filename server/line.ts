@@ -274,7 +274,15 @@ async function processCustomerRegistration(userId: string, messageText: string):
     if (matchingDeals.length === 1) {
       // 1件だけマッチした場合、自動で紐付け
       const deal = matchingDeals[0];
-      await storage.updateDeal(deal.id, { lineUserId: userId });
+      console.log(`🔗 LINE連携: ${deal.client}様 (ID: ${deal.id}) にUser ID ${userId} を紐付け中...`);
+      
+      const updatedDeal = await storage.updateDeal(deal.id, { lineUserId: userId });
+      
+      if (updatedDeal) {
+        console.log(`✅ LINE連携完了: ${deal.client}様のLine User IDが正常に更新されました`);
+      } else {
+        console.error(`❌ LINE連携失敗: Deal ${deal.id} の更新に失敗しました`);
+      }
       
       await sendLinePushMessage(userId,
         `${deal.client}様、ご登録ありがとうございます！\n\n` +

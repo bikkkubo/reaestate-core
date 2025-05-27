@@ -1,0 +1,173 @@
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-cloud-trace-context': '92bed2fe7bd2b35a710948eae213eada/16879545179234575908;o=1',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-forwarded-for': '147.92.150.193, 34.117.33.233, 35.191.73.226,35.188.87.224',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-forwarded-host': 'kanban-guan-li-sisutemu-kosukeokubo.replit.app',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-forwarded-proto': 'https',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-line-signature': 'kyDK/ujpCwG4Y3zPCVpet48UxJBDybBWAmRk+9Yd8Ig=',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-bio': '',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-id': '',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-name': '',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-profile-image': '',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-roles': '',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-teams': '',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+'x-replit-user-url': ''
+2025-05-27 09:58:45.78
+ee9f1397
+User
+}
+2025-05-27 09:58:45.78
+ee9f1397
+User
+🔥 Webhook body: {
+2025-05-27 09:58:45.78
+ee9f1397
+User
+destination: 'U9ad3d4685f3f465cad100a0e0492a565',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+events: [
+2025-05-27 09:58:45.78
+ee9f1397
+User
+{
+2025-05-27 09:58:45.78
+ee9f1397
+User
+type: 'message',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+message: [Object],
+2025-05-27 09:58:45.78
+ee9f1397
+User
+webhookEventId: '01JW7KZFSDDE6AVZQY54YGTYZ0',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+deliveryContext: [Object],
+2025-05-27 09:58:45.78
+ee9f1397
+User
+timestamp: 1748307524920,
+2025-05-27 09:58:45.78
+ee9f1397
+User
+source: [Object],
+2025-05-27 09:58:45.78
+ee9f1397
+User
+replyToken: '9f67f52e2dcd4a46ab8afefe165300c0',
+2025-05-27 09:58:45.78
+ee9f1397
+User
+mode: 'active'
+2025-05-27 09:58:45.78
+ee9f1397
+User
+}
+2025-05-27 09:58:45.78
+ee9f1397
+User
+]
+2025-05-27 09:58:45.78
+ee9f1397
+User
+}
+2025-05-27 09:58:45.78
+ee9f1397
+User
+Processing webhook without signature verification for testing...
+2025-05-27 09:58:45.78
+ee9f1397
+User
+Request method: POST
+2025-05-27 09:58:45.78
+ee9f1397
+User
+Request path: /api/line/webhook
+2025-05-27 09:58:45.78
+ee9f1397
+User
+Google Sheets API simulation: update deal 1 -
+2025-05-27 09:58:46.69
+ee9f1397
+User
+LINE message sent to user U3a4b1b1d2fb906296c4125b67ce602dc
+2025-05-27 09:58:46.69
+ee9f1397
+User
+12:58:46 AM [express] POST /api/line/webhook 200 in 913ms :: {"success":true}
+2025-05-27 09:58:52.39
+ee9f1397
+User
+12:58:52 AM [express] GET /api/deals 200 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-27 09:58:55.30
+ee9f1397
+User
+Google Sheets API simulation: update deal 1 -
+2025-05-27 09:58:55.30
+ee9f1397
+User
+12:58:55 AM [express] PATCH /api/deals/1 200 in 1ms :: {"title":"","client":"田中太郎様","priority":"高","p…
+2025-05-27 09:58:55.48
+ee9f1397
+User
+12:58:55 AM [express] GET /api/deals 200 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+
+Wrap
+
+Colors
+Results of your code will appear here when you run
+Default
+Workflows
+Preview your App here
+The App is currently not running.
+is waiting for your response.
+Secrets are accessible to anyone who has access to this App. To restrict secret access, you must update App invite permissions. For more information, visit our documentation.
+SESSION_SECRET
+••••••••
+SLACK_BOT_TOKEN
+••••••••
+SLACK_CHANNEL_ID
+••••••••
+LINE_CHANNEL_ACCESS_TOKEN
+••••••••
+LINE_CHANNEL_SECRET
+••••••••
