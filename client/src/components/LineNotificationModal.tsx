@@ -5,9 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Deal } from "../../../shared/schema";
+import { Deal } from "@shared/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface LineNotificationModalProps {
@@ -155,21 +154,28 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
     }
   };
 
-  // メッセージテンプレートを取得
-  const getTemplateMessage = async (phase: string) => {
-    try {
-      const response = await apiRequest(`/api/line/template/${encodeURIComponent(phase)}`);
-      return response;
-    } catch (error) {
-      console.error("Failed to get template:", error);
-      return { template: "" };
+  useEffect(() => {
+    if (deal && newPhase && open) {
+      setLineUserId(deal.lineUserId || "");
+      // 現在のフェーズに対応するテンプレートを自動選択
+      const phaseTemplate = MESSAGE_TEMPLATES.find(t => t.name === newPhase);
+      if (phaseTemplate) {
+        setSelectedTemplate(newPhase);
+        const processedMessage = replacePlaceholders(phaseTemplate.template, deal);
+        setMessage(processedMessage);
+      } else {
+        // フェーズに対応するテンプレートがない場合は、カスタムを選択
+        setSelectedTemplate("カスタム");
+        const customMessage = replacePlaceholders(MESSAGE_TEMPLATES.find(t => t.name === "カスタム")?.template || "", deal);
+        setMessage(customMessage);
+      }
     }
-  };
+  }, [deal, newPhase, open]);
 
   // LINE通知送信
   const sendNotificationMutation = useMutation({
     mutationFn: async (data: SendLineNotificationRequest) => {
-      console.log('📱 LINE通知送信中:', data);
+      console.log('📱 フェーズ変更LINE通知送信中:', data);
       const response = await fetch("/api/line/send", {
         method: "POST",
         headers: {
@@ -200,30 +206,6 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
       });
     },
   });
-
-  // モーダルが開かれた時にテンプレートを読み込み
-  useEffect(() => {
-    if (open && newPhase && deal) {
-      // LINE連携済みの場合は即座にUser IDを入力
-      if (deal.lineUserId) {
-        setLineUserId(deal.lineUserId);
-      } else {
-        setLineUserId("");
-      }
-      
-      getTemplateMessage(newPhase).then((data) => {
-        let template = data.template || "";
-        
-        // 変数を置換
-        template = template
-          .replace(/{clientName}/g, deal.client || "")
-          .replace(/{propertyName}/g, deal.title || "")
-          .replace(/{dueDate}/g, deal.dueDate || "");
-        
-        setMessage(template);
-      });
-    }
-  }, [open, newPhase, deal]);
 
   const handleSend = () => {
     if (!deal || !newPhase) return;
@@ -258,11 +240,11 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <i className="fab fa-line text-green-500 text-xl"></i>
-            <span>LINE通知確認・編集</span>
+            <span>フェーズ変更通知 - {deal.client}</span>
           </DialogTitle>
         </DialogHeader>
         
@@ -278,91 +260,79 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
                 <span className="font-medium text-gray-600">新フェーズ:</span>
                 <span className="ml-2 font-medium text-blue-600">{newPhase}</span>
               </div>
-              <div>
-                <span className="font-medium text-gray-600">物件:</span>
-                <span className="ml-2">{deal.title}</span>
-              </div>
-              <div>
-                <span className="font-medium text-gray-600">期日:</span>
-                <span className="ml-2">{deal.dueDate}</span>
-              </div>
             </div>
           </div>
 
-          {/* LINE User ID入力 */}
+          {/* テンプレート選択 */}
+          <div className="space-y-2">
+            <Label htmlFor="template">メッセージテンプレート</Label>
+            <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+              <SelectTrigger>
+                <SelectValue placeholder="テンプレートを選択してください" />
+              </SelectTrigger>
+              <SelectContent>
+                {MESSAGE_TEMPLATES.map((template) => (
+                  <SelectItem key={template.name} value={template.name}>
+                    {template.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* LINE User ID */}
           <div className="space-y-2">
             <Label htmlFor="lineUserId">LINE User ID</Label>
             <Input
               id="lineUserId"
               value={lineUserId}
               onChange={(e) => setLineUserId(e.target.value)}
-              placeholder="顧客のLINE User IDを入力"
-              className="font-mono text-sm"
+              placeholder="LINE User IDを入力"
+              className="font-mono"
             />
-            <p className="text-xs text-gray-500">
-              ※ LINE Messaging APIから取得したUser IDを入力してください
-            </p>
+            {!lineUserId && (
+              <p className="text-sm text-amber-600">
+                <i className="fas fa-exclamation-triangle mr-1"></i>
+                LINE通知を送信するにはLINE User IDが必要です
+              </p>
+            )}
           </div>
 
-          {/* メッセージ編集 */}
+          {/* メッセージプレビュー */}
           <div className="space-y-2">
             <Label htmlFor="message">送信メッセージ</Label>
             <Textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              rows={12}
-              className="font-sans"
-              placeholder="送信するメッセージを入力してください"
+              placeholder="メッセージを確認・編集してください"
+              className="min-h-[200px]"
             />
-            <p className="text-xs text-gray-500">
-              変数: {"{clientName}"}, {"{propertyName}"}, {"{dueDate}"}
-            </p>
+            <p className="text-xs text-gray-500">{message.length} 文字</p>
           </div>
 
-          {/* プレビュー */}
-          <div className="space-y-2">
-            <Label>プレビュー</Label>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <i className="fab fa-line text-green-500"></i>
-                <span className="font-medium text-green-700">LINE Bot</span>
-              </div>
-              <div className="whitespace-pre-wrap text-sm text-gray-800">
-                {message || "メッセージを入力してください"}
-              </div>
-            </div>
-          </div>
-
-          {/* アクションボタン */}
-          <div className="flex justify-between space-x-4">
+          {/* アクション */}
+          <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={handleSkip}>
-              <i className="fas fa-times mr-2"></i>
-              通知をスキップ
+              スキップ
             </Button>
-            
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={onClose}>
-                キャンセル
-              </Button>
-              <Button 
-                onClick={handleSend}
-                disabled={sendNotificationMutation.isPending || !message.trim() || !lineUserId.trim()}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {sendNotificationMutation.isPending ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
-                    送信中...
-                  </>
-                ) : (
-                  <>
-                    <i className="fab fa-line mr-2"></i>
-                    LINE通知を送信
-                  </>
-                )}
-              </Button>
-            </div>
+            <Button 
+              onClick={handleSend}
+              disabled={sendNotificationMutation.isPending || !message.trim() || !lineUserId.trim()}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {sendNotificationMutation.isPending ? (
+                <>
+                  <i className="fas fa-spinner fa-spin mr-2"></i>
+                  送信中...
+                </>
+              ) : (
+                <>
+                  <i className="fab fa-line mr-2"></i>
+                  LINE送信
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </DialogContent>
