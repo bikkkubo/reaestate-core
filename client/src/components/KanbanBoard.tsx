@@ -278,6 +278,13 @@ export function KanbanBoard() {
         open={!!lineNotificationData}
         onClose={() => setLineNotificationData(null)}
       />
+
+      {/* Manual LINE Message Modal */}
+      <ManualLineMessageModal
+        deal={manualLineMessageDeal}
+        open={!!manualLineMessageDeal}
+        onClose={() => setManualLineMessageDeal(null)}
+      />
     </div>
   );
 }
