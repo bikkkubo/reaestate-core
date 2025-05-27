@@ -6,6 +6,7 @@ import { DealCard } from "./DealCard";
 import { LoadingOverlay } from "./LoadingOverlay";
 import { EditDealModal } from "./EditDealModal";
 import { LineNotificationModal } from "./LineNotificationModal";
+import { ManualLineMessageModal } from "./ManualLineMessageModal";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -17,6 +18,7 @@ export function KanbanBoard() {
     deal: Deal;
     newPhase: string;
   } | null>(null);
+  const [manualLineMessageDeal, setManualLineMessageDeal] = useState<Deal | null>(null);
 
   const { data: deals = [], isLoading } = useQuery<Deal[]>({
     queryKey: ["/api/deals"],
@@ -244,6 +246,7 @@ export function KanbanBoard() {
                                     deal={deal} 
                                     isCompleted={isCompleted} 
                                     onEdit={setEditingDeal}
+                                    onSendLineMessage={setManualLineMessageDeal}
                                   />
                                 </div>
                               )}

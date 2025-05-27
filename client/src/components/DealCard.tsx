@@ -6,9 +6,10 @@ interface DealCardProps {
   deal: Deal;
   isCompleted?: boolean;
   onEdit?: (deal: Deal) => void;
+  onSendLineMessage?: (deal: Deal) => void;
 }
 
-export function DealCard({ deal, isCompleted = false, onEdit }: DealCardProps) {
+export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage }: DealCardProps) {
   const dueDate = new Date(deal.dueDate);
   const today = new Date();
   const isOverdue = isAfter(today, dueDate) && !isCompleted;
@@ -80,6 +81,18 @@ export function DealCard({ deal, isCompleted = false, onEdit }: DealCardProps) {
               )}
               {isCompleted && (
                 <i className="fas fa-check-circle text-green-500 text-sm"></i>
+              )}
+              {deal.lineUserId && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onSendLineMessage) onSendLineMessage(deal);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-green-100"
+                  title="LINE送信"
+                >
+                  <i className="fab fa-line text-xs text-green-600 hover:text-green-800"></i>
+                </button>
               )}
               <button
                 onClick={(e) => {
