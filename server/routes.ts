@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertDealSchema } from "@shared/schema";
 import { z } from "zod";
 import { triggerManualReminders } from "./notifications";
-import { sendDealToLedger, syncAllDealsToLedger } from "./ledger";
+import { sendDealToLedger, syncCompletedDealsToLedger } from "./ledger";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all deals
@@ -205,16 +205,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // 取引台帳連携 - 全案件一括送信
+  // 取引台帳連携 - 契約完了案件のみ一括送信
   app.post("/api/ledger/sync-all", async (req, res) => {
     try {
       const deals = await storage.getAllDeals();
-      const result = await syncAllDealsToLedger(deals);
+      const result = await syncCompletedDealsToLedger(deals);
       
       res.json({
-        message: "取引台帳一括同期完了",
+        message: "契約完了案件の取引台帳同期完了",
         sentCount: result.sent,
         totalDeals: deals.length,
+        skippedCount: result.skipped,
         errors: result.errors
       });
     } catch (error) {

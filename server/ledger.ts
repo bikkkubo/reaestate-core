@@ -135,18 +135,22 @@ export async function updateDealInLedger(deal: Deal, ledgerId: string): Promise<
 }
 
 /**
- * 全ての案件を取引台帳に一括送信
+ * ⑩契約完了ステータスの案件のみを取引台帳に一括送信
  */
-export async function syncAllDealsToLedger(deals: Deal[]): Promise<{ sent: number; errors: string[] }> {
+export async function syncCompletedDealsToLedger(deals: Deal[]): Promise<{ sent: number; errors: string[]; skipped: number }> {
   let sentCount = 0;
+  let skippedCount = 0;
   const errors: string[] = [];
 
-  for (const deal of deals) {
+  // ⑩契約完了ステータスの案件のみをフィルタリング
+  const completedDeals = deals.filter(deal => deal.phase === "⑩契約終了");
+
+  for (const deal of completedDeals) {
     try {
       const result = await sendDealToLedger(deal);
       if (result.success) {
         sentCount++;
-        console.log(`案件 ${deal.id} (${deal.client}) を取引台帳に送信完了`);
+        console.log(`契約完了案件 ${deal.id} (${deal.client}) を取引台帳に送信完了`);
       } else {
         errors.push(`案件 ${deal.id}: ${result.message}`);
       }
@@ -155,9 +159,11 @@ export async function syncAllDealsToLedger(deals: Deal[]): Promise<{ sent: numbe
       await new Promise(resolve => setTimeout(resolve, 100));
       
     } catch (error) {
-      errors.push(`案件 ${deal.id}: ${error.message}`);
+      errors.push(`案件 ${deal.id}: ${(error as Error).message}`);
     }
   }
 
-  return { sent: sentCount, errors };
+  skippedCount = deals.length - completedDeals.length;
+
+  return { sent: sentCount, errors, skipped: skippedCount };
 }
