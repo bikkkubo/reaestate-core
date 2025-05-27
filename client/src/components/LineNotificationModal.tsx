@@ -43,10 +43,20 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
   // LINE通知送信
   const sendNotificationMutation = useMutation({
     mutationFn: async (data: SendLineNotificationRequest) => {
-      return apiRequest("/api/line/send", {
+      console.log('📱 LINE通知送信中:', data);
+      const response = await fetch("/api/line/send", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       toast({
