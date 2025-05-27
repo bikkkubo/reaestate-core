@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertDealSchema, Deal, PHASES } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { ManualLineMessageModal } from "@/components/ManualLineMessageModal";
 import {
   Dialog,
   DialogContent,
@@ -42,6 +43,7 @@ interface EditDealModalProps {
 export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isLineModalOpen, setIsLineModalOpen] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(insertDealSchema),
@@ -280,16 +282,29 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
             </div>
 
             <div className="flex justify-between pt-4">
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={handleDelete}
-                disabled={updateDealMutation.isPending || deleteDealMutation.isPending}
-                className="flex items-center space-x-2"
-              >
-                <i className="fas fa-trash text-sm"></i>
-                <span>削除</span>
-              </Button>
+              <div className="flex space-x-3">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={updateDealMutation.isPending || deleteDealMutation.isPending}
+                  className="flex items-center space-x-2"
+                >
+                  <i className="fas fa-trash text-sm"></i>
+                  <span>削除</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsLineModalOpen(true)}
+                  disabled={updateDealMutation.isPending || deleteDealMutation.isPending}
+                  className="flex items-center space-x-2 text-green-600 border-green-600 hover:bg-green-50"
+                >
+                  <i className="fab fa-line text-sm"></i>
+                  <span>LINE送信</span>
+                </Button>
+              </div>
 
               <div className="flex space-x-3">
                 <Button
@@ -321,6 +336,13 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
             </div>
           </form>
         </Form>
+
+        {/* Manual LINE Message Modal */}
+        <ManualLineMessageModal
+          deal={deal}
+          open={isLineModalOpen}
+          onClose={() => setIsLineModalOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );
