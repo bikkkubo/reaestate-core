@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertDealSchema } from "@shared/schema";
 import { z } from "zod";
 import { triggerManualReminders } from "./notifications";
+import { sendDealToLedger, syncAllDealsToLedger } from "./ledger";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all deals
@@ -174,6 +175,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error sending LINE notification:", error);
       res.status(500).json({ error: "Failed to send notification" });
+    }
+  });
+
+  // 取引台帳連携 - 単一案件送信
+  app.post("/api/ledger/sync/:id", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id);
+      const deal = await storage.getDeal(dealId);
+      
+      if (!deal) {
+        return res.status(404).json({ error: "案件が見つかりません" });
+      }
+
+      const result = await sendDealToLedger(deal);
+      
+      if (result.success) {
+        res.json({ 
+          message: result.message,
+          ledgerId: result.ledgerId,
+          deal: { id: deal.id, client: deal.client, phase: deal.phase }
+        });
+      } else {
+        res.status(500).json({ error: result.message });
+      }
+    } catch (error) {
+      console.error("取引台帳送信エラー:", error);
+      res.status(500).json({ error: "取引台帳への送信に失敗しました" });
+    }
+  });
+
+  // 取引台帳連携 - 全案件一括送信
+  app.post("/api/ledger/sync-all", async (req, res) => {
+    try {
+      const deals = await storage.getAllDeals();
+      const result = await syncAllDealsToLedger(deals);
+      
+      res.json({
+        message: "取引台帳一括同期完了",
+        sentCount: result.sent,
+        totalDeals: deals.length,
+        errors: result.errors
+      });
+    } catch (error) {
+      console.error("取引台帳一括同期エラー:", error);
+      res.status(500).json({ error: "取引台帳への一括送信に失敗しました" });
     }
   });
 

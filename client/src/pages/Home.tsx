@@ -39,6 +39,22 @@ export default function Home() {
               <Button
                 onClick={async () => {
                   try {
+                    const response = await fetch('/api/ledger/sync-all', { method: 'POST' });
+                    const result = await response.json();
+                    alert(`取引台帳同期完了: ${result.sentCount}件の案件を送信しました`);
+                  } catch (error) {
+                    alert('取引台帳同期に失敗しました');
+                  }
+                }}
+                variant="outline"
+                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              >
+                <i className="fas fa-sync text-sm mr-2"></i>
+                <span className="hidden sm:block">取引台帳同期</span>
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
                     const response = await fetch('/api/notifications/test', { method: 'POST' });
                     const result = await response.json();
                     alert(`Slack通知テスト完了: ${result.sentCount}件の案件に通知を送信しました`);
