@@ -66,8 +66,15 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
   });
 
   // モーダルが開かれた時にテンプレートを読み込み
-  useState(() => {
+  useEffect(() => {
     if (open && newPhase && deal) {
+      // LINE連携済みの場合は即座にUser IDを入力
+      if (deal.lineUserId) {
+        setLineUserId(deal.lineUserId);
+      } else {
+        setLineUserId("");
+      }
+      
       getTemplateMessage(newPhase).then((data) => {
         let template = data.template || "";
         
@@ -78,11 +85,9 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
           .replace(/{dueDate}/g, deal.dueDate || "");
         
         setMessage(template);
-        // LINE連携済みの場合は自動でUser IDを入力
-        setLineUserId(deal.lineUserId || "");
       });
     }
-  });
+  }, [open, newPhase, deal]);
 
   const handleSend = () => {
     if (!deal || !newPhase) return;
