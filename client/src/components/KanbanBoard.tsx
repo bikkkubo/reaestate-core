@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Deal, PHASES, Phase } from "@shared/schema";
@@ -20,7 +20,19 @@ export function KanbanBoard() {
 
   const { data: deals = [], isLoading } = useQuery<Deal[]>({
     queryKey: ["/api/deals"],
+    refetchInterval: 5000, // 5秒ごとにデータを更新
+    refetchIntervalInBackground: true, // バックグラウンドでも更新
+    refetchOnWindowFocus: true, // ウィンドウフォーカス時に更新
   });
+
+  // LINE連携の状態変化を監視
+  useEffect(() => {
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["/api/deals"] });
+    }, 3000); // 3秒ごとにキャッシュを無効化
+
+    return () => clearInterval(interval);
+  }, [queryClient]);
 
   const updatePhaseMutation = useMutation({
     mutationFn: async ({ id, phase }: { id: number; phase: Phase }) => {

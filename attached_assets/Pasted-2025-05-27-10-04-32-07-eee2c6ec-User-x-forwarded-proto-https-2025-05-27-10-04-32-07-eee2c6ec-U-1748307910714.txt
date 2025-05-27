@@ -1,0 +1,169 @@
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-forwarded-proto': 'https',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-line-signature': 'x4vK85LUym8Db/c9fkuxDToDNrO1c8Bm7rIDTlY1bOU=',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-bio': '',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-id': '',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-name': '',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-profile-image': '',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-roles': '',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-teams': '',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+'x-replit-user-url': ''
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+}
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+🔥 Webhook body: {
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+destination: 'U9ad3d4685f3f465cad100a0e0492a565',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+events: [
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+{
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+type: 'message',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+message: [Object],
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+webhookEventId: '01JW7MA211EDAEZERXYQC6YJ9G',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+deliveryContext: [Object],
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+timestamp: 1748307871270,
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+source: [Object],
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+replyToken: 'e67293c0b1e64951b112e1c3ae881028',
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+mode: 'active'
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+}
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+]
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+}
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+Processing webhook without signature verification for testing...
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+Request method: POST
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+Request path: /api/line/webhook
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+🔗 LINE連携: 田中太郎様様 (ID: 1) にUser ID U3a4b1b1d2fb906296c4125b67ce602dc を紐付け中...
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+Google Sheets API simulation: update deal 1 -
+2025-05-27 10:04:32.07
+eee2c6ec
+User
+✅ LINE連携完了: 田中太郎様様のLine User IDが正常に更新されました
+2025-05-27 10:04:32.58
+eee2c6ec
+User
+LINE message sent to user U3a4b1b1d2fb906296c4125b67ce602dc
+2025-05-27 10:04:32.58
+eee2c6ec
+User
+1:04:32 AM [express] POST /api/line/webhook 200 in 509ms :: {"success":true}
+2025-05-27 10:04:36.75
+eee2c6ec
+User
+1:04:36 AM [express] GET /api/deals 200 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-27 10:04:39.88
+eee2c6ec
+User
+Google Sheets API simulation: update deal 1 -
+2025-05-27 10:04:39.88
+eee2c6ec
+User
+1:04:39 AM [express] PATCH /api/deals/1 200 in 1ms :: {"title":"","client":"田中太郎様","priority":"高","p…
+2025-05-27 10:04:40.06
+eee2c6ec
+User
+1:04:40 AM [express] GET /api/deals 200 in 2ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+
+Wrap
+
+Colors
+3m
+ • 
+3 minutes ago
+Port :5000 opened on
+/
+
+Secrets are accessible to anyone who has access to this App. To restrict secret access, you must update App invite permissions. For more information, visit our documentation.
+SESSION_SECRET
+••••••••
+SLACK_BOT_TOKEN
+••••••••
+SLACK_CHANNEL_ID
+••••••••
+LINE_CHANNEL_ACCESS_TOKEN
+••••••••
+LINE_CHANNEL_SECRET
+••••••••
