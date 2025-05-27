@@ -70,7 +70,7 @@ export async function sendDealToLedger(deal: Deal): Promise<{ success: boolean; 
   try {
     const ledgerData = convertDealToLedgerFormat(deal);
     
-    const response = await fetch(`${LEDGER_API_BASE}/api/ledger`, {
+    const response = await fetch(`${LEDGER_API_BASE}/api/ledger/kanban`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

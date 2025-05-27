@@ -41,7 +41,7 @@ export default function Home() {
                   try {
                     const response = await fetch('/api/ledger/sync-all', { method: 'POST' });
                     const result = await response.json();
-                    alert(`取引台帳同期完了: ${result.sentCount}件の案件を送信しました`);
+                    alert(`契約完了案件の取引台帳同期完了: ${result.sentCount}件送信、${result.skippedCount}件スキップ`);
                   } catch (error) {
                     alert('取引台帳同期に失敗しました');
                   }
