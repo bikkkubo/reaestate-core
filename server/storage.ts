@@ -1,4 +1,6 @@
 import { deals, type Deal, type InsertDeal, PHASES } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getAllDeals(): Promise<Deal[]>;
@@ -192,4 +194,63 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getAllDeals(): Promise<Deal[]> {
+    const result = await db.select().from(deals);
+    return result;
+  }
+
+  async getDeal(id: number): Promise<Deal | undefined> {
+    const [deal] = await db.select().from(deals).where(eq(deals.id, id));
+    return deal || undefined;
+  }
+
+  async createDeal(insertDeal: InsertDeal): Promise<Deal> {
+    const [deal] = await db
+      .insert(deals)
+      .values({
+        ...insertDeal,
+        lineUserId: insertDeal.lineUserId || null,
+      })
+      .returning();
+    return deal;
+  }
+
+  async updateDealPhase(id: number, phase: string): Promise<Deal | undefined> {
+    const [deal] = await db
+      .update(deals)
+      .set({ phase, updatedAt: new Date() })
+      .where(eq(deals.id, id))
+      .returning();
+    return deal || undefined;
+  }
+
+  async updateDeal(id: number, updates: Partial<InsertDeal>): Promise<Deal | undefined> {
+    const [deal] = await db
+      .update(deals)
+      .set({
+        ...updates,
+        lineUserId: updates.lineUserId || null,
+        updatedAt: new Date(),
+      })
+      .where(eq(deals.id, id))
+      .returning();
+    return deal || undefined;
+  }
+
+  async deleteDeal(id: number): Promise<boolean> {
+    const result = await db.delete(deals).where(eq(deals.id, id));
+    return result.rowCount > 0;
+  }
+
+  async syncWithGoogleSheets(): Promise<{ synced: number; errors: string[] }> {
+    // Google Sheets同期はMemStorageと同様の実装を保持
+    return { synced: 0, errors: ["Google Sheets sync not implemented for database storage"] };
+  }
+
+  async getMetadata(): Promise<{ phases: string[] }> {
+    return { phases: PHASES.slice() };
+  }
+}
+
+export const storage = new DatabaseStorage();
