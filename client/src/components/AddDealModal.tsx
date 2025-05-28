@@ -218,6 +218,213 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
               )}
             />
 
+            {/* 取引台帳項目 */}
+            <div className="border-t pt-4 mt-6">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">取引台帳情報</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="tenantName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>借主名</FormLabel>
+                      <FormControl>
+                        <Input placeholder="田中太郎" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contractDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>契約日</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rentPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>賃料（円）</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="150000"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="managementFee"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>管理費（円）</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="15000"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="deposit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>敷金（円）</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="300000"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="keyMoney"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>礼金（円）</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="150000"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="brokerage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>仲介手数料（円）</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="150000"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="adFee"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>AD料（円）</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="50000"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 mt-4">
+                <FormField
+                  control={form.control}
+                  name="tenantAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>借主住所</FormLabel>
+                      <FormControl>
+                        <Input placeholder="東京都渋谷区..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="landlordName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>貸主名</FormLabel>
+                      <FormControl>
+                        <Input placeholder="株式会社..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="landlordAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>貸主住所</FormLabel>
+                      <FormControl>
+                        <Input placeholder="東京都..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="realEstateAgent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>仲介会社</FormLabel>
+                      <FormControl>
+                        <Input placeholder="株式会社不動産..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
             <div className="flex justify-end space-x-3 pt-4">
               <Button
                 type="button"
