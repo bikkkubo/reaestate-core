@@ -1,42 +1,47 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, integer, date, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const deals = pgTable("deals", {
-  id: serial("id").primaryKey(),
+  // 取引台帳システムの既存項目
+  id: uuid("id").primaryKey().defaultRandom(),
+  dealNumber: text("deal_number").notNull(),
+  dealType: text("deal_type").notNull(),
+  tenantName: text("tenant_name"),
+  tenantAddress: text("tenant_address"),
+  importantExplanationDate: date("important_explanation_date"),
+  contractDate: date("contract_date"),
+  rentPrice: integer("rent_price"),
+  managementFee: integer("management_fee"),
+  totalRent: integer("total_rent"),
+  deposit: integer("deposit"),
+  keyMoney: integer("key_money"),
+  brokerage: integer("brokerage"),
+  contractStartDate: date("contract_start_date"),
+  contractEndDate: date("contract_end_date"),
+  landlordName: text("landlord_name"),
+  landlordAddress: text("landlord_address"),
+  realEstateAgent: text("real_estate_agent"),
+  otherNotes: text("other_notes"),
+  completedAt: timestamp("completed_at").notNull().defaultNow(),
+  adFee: integer("ad_fee"),
   
-  // 基本情報
-  title: text("title").notNull(),
+  // カンバンシステム用追加項目
+  title: text("title"),
   client: text("client"),
-  priority: text("priority").notNull(), // "高", "中", "低"
-  phase: text("phase").notNull(), // Current phase name
-  dueDate: text("due_date").notNull(), // ISO date string
+  priority: text("priority"),
+  phase: text("phase"),
+  dueDate: text("due_date"),
   notes: text("notes"),
-  
-  // 取引台帳項目
-  dealNumber: text("deal_number"), // 案件番号 (R2025-001)
-  dealType: text("deal_type").default("rental"), // 取引形態
-  tenantName: text("tenant_name"), // 借主名
-  tenantAddress: text("tenant_address"), // 借主住所
-  contractDate: text("contract_date"), // 契約日
-  rentPrice: integer("rent_price"), // 賃料
-  managementFee: integer("management_fee"), // 管理費
-  deposit: integer("deposit"), // 敷金
-  keyMoney: integer("key_money"), // 礼金
-  brokerage: integer("brokerage"), // 仲介手数料
-  adFee: integer("ad_fee"), // AD料
-  landlordName: text("landlord_name"), // 貸主名
-  landlordAddress: text("landlord_address"), // 貸主住所
-  realEstateAgent: text("real_estate_agent"), // 仲介会社
-  
-  // システム項目
-  lineUserId: text("line_user_id"), // LINE User ID for notifications
-  sheetRowIndex: integer("sheet_row_index"), // Google Sheets row number
+  lineUserId: text("line_user_id"),
+  sheetRowIndex: integer("sheet_row_index"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  kanbanDealId: integer("kanban_deal_id"),
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({
+  // カンバンシステム用項目
   title: true,
   client: true,
   priority: true,
