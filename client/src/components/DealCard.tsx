@@ -129,12 +129,7 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
               </div>
             )}
 
-            {deal.title && (
-              <div className="flex items-center">
-                <i className="fas fa-building mr-1"></i>
-                <span className="text-sm text-gray-600">{deal.title}</span>
-              </div>
-            )}
+
 
             {deal.lineUserId && (
               <div className="flex items-center">
