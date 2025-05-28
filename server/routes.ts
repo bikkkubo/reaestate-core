@@ -51,6 +51,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!deal) {
           return res.status(404).json({ message: "Deal not found" });
         }
+
+        // ⑩契約終了フェーズに移動した場合、取引台帳に自動送信
+        if (req.body.phase === "⑩契約終了") {
+          try {
+            const { sendDealToLedger } = await import("./ledger");
+            const ledgerResult = await sendDealToLedger(deal);
+            
+            if (ledgerResult.success) {
+              console.log(`✅ 案件 ${deal.id} (${deal.client}) を取引台帳に自動送信完了`);
+            } else {
+              console.error(`❌ 取引台帳送信失敗: ${ledgerResult.message}`);
+            }
+          } catch (error) {
+            console.error("取引台帳連携エラー:", error);
+          }
+        }
+
         return res.json(deal);
       }
 
