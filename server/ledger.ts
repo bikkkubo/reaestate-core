@@ -76,8 +76,6 @@ export async function sendDealToLedger(deal: Deal): Promise<{ success: boolean; 
     const ledgerData = convertDealToLedgerFormat(deal);
     
     console.log(`🚀 取引台帳送信開始: ${deal.client} (案件ID: ${deal.id})`);
-    console.log("送信先URL:", `${LEDGER_API_BASE}/api/ledger/kanban`);
-    console.log("送信データ:", JSON.stringify(ledgerData, null, 2));
     
     const response = await fetch(`${LEDGER_API_BASE}/api/ledger/kanban`, {
       method: 'POST',
