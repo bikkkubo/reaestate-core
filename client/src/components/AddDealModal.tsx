@@ -94,7 +94,7 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>新規案件追加</DialogTitle>
         </DialogHeader>
