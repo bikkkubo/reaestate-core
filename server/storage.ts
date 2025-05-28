@@ -253,4 +253,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// 一時的にMemStorageを使用してシステムを復旧
+export const storage = new MemStorage();
