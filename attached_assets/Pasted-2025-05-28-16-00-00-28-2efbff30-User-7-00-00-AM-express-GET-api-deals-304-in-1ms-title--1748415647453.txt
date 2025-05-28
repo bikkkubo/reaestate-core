@@ -1,0 +1,145 @@
+2025-05-28 16:00:00.28
+2efbff30
+User
+7:00:00 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:02.30
+2efbff30
+User
+7:00:02 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:03.30
+2efbff30
+User
+7:00:03 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:06.28
+2efbff30
+User
+7:00:06 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:08.27
+2efbff30
+User
+7:00:08 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:09.28
+2efbff30
+User
+7:00:09 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:12.28
+2efbff30
+User
+7:00:12 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:14.31
+2efbff30
+User
+7:00:14 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:15.28
+2efbff30
+User
+7:00:15 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:19.94
+2efbff30
+User
+7:00:19 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:20.27
+2efbff30
+User
+7:00:20 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:20.86
+2efbff30
+User
+7:00:20 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:23.85
+2efbff30
+User
+7:00:23 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:26.28
+2efbff30
+User
+7:00:26 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:26.85
+2efbff30
+User
+7:00:26 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:27.39
+2efbff30
+User
+Google Sheets API simulation: update deal 2 - 新宿区オフィスビル 5階
+2025-05-28 16:00:27.39
+2efbff30
+User
+🚀 取引台帳送信開始: 佐藤花子様 (案件ID: 2)
+2025-05-28 16:00:28.13
+2efbff30
+User
+📡 取引台帳レスポンス: 200 OK
+2025-05-28 16:00:28.13
+2efbff30
+User
+✅ 案件 2 (佐藤花子様) を取引台帳に自動送信完了
+2025-05-28 16:00:28.14
+2efbff30
+User
+7:00:28 AM [express] PATCH /api/deals/2 200 in 747ms :: {"title":"新宿区オフィスビル 5階","client":"佐藤花子様","pr…
+2025-05-28 16:00:28.33
+2efbff30
+User
+7:00:28 AM [express] GET /api/deals 200 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:30.28
+2efbff30
+User
+7:00:30 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:32.29
+2efbff30
+User
+7:00:32 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:33.29
+2efbff30
+User
+7:00:33 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:36.27
+2efbff30
+User
+7:00:36 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:38.27
+2efbff30
+User
+7:00:38 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:39.28
+2efbff30
+User
+7:00:39 AM [express] GET /api/deals 304 in 1ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+2025-05-28 16:00:42.29
+2efbff30
+User
+7:00:42 AM [express] GET /api/deals 304 in 0ms :: [{"title":"","client":"田中太郎様","priority":"高","phas…
+
+Wrap
+
+Colors
+14m
+ • 
+14 minutes ago
+Port :5000 opened on
+/
+
+Secrets are accessible to anyone who has access to this App. To restrict secret access, you must update App invite permissions. For more information, visit our documentation.
+SESSION_SECRET
+••••••••
+SLACK_BOT_TOKEN
+••••••••
+SLACK_CHANNEL_ID
+••••••••
+LINE_CHANNEL_ACCESS_TOKEN
+••••••••
+LINE_CHANNEL_SECRET
+••••••••
+PGDATABASE
+••••••••
+PGHOST
+••••••••
+PGPORT
+••••••••
+PGUSER
+••••••••
+PGPASSWORD
+••••••••
+DATABASE_URL
+••••••••
