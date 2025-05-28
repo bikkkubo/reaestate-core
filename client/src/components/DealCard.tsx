@@ -118,13 +118,61 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
               </span>
             </div>
             
-            {deal.phase === "⑪フォローアップ" && (
+            {deal.phase === "⑩フォローアップ" && (
               <div className="bg-blue-50 p-2 rounded text-xs mb-2">
                 <div className="font-medium text-blue-900 mb-1">フォローアップ内容:</div>
                 <div className="text-blue-800 space-y-1">
-                  <div>• ライフライン契約サポート</div>
-                  <div>• 引っ越し祝い送付</div>
-                  {deal.notes && <div>• {deal.notes}</div>}
+                  <div className="flex items-center">
+                    <span className={`mr-2 ${deal.followUpUtilities === "true" ? "text-green-600" : "text-gray-400"}`}>
+                      {deal.followUpUtilities === "true" ? "✓" : "○"}
+                    </span>
+                    ライフライン契約サポート
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`mr-2 ${deal.followUpGift === "true" ? "text-green-600" : "text-gray-400"}`}>
+                      {deal.followUpGift === "true" ? "✓" : "○"}
+                    </span>
+                    引っ越し祝い送付
+                  </div>
+                  {deal.followUpOther && (
+                    <div className="flex items-center">
+                      <span className="mr-2 text-blue-600">•</span>
+                      {deal.followUpOther}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {deal.phase === "⑪AD請求/着金" && (
+              <div className="bg-green-50 p-2 rounded text-xs mb-2">
+                <div className="font-medium text-green-900 mb-1">AD請求/着金情報:</div>
+                <div className="text-green-800 space-y-1">
+                  {deal.adAmount && (
+                    <div className="flex items-center">
+                      <i className="fas fa-yen-sign mr-1"></i>
+                      金額: {deal.adAmount.toLocaleString()}円
+                    </div>
+                  )}
+                  {deal.invoiceDate && (
+                    <div className="flex items-center">
+                      <i className="fas fa-file-invoice mr-1"></i>
+                      請求日: {format(new Date(deal.invoiceDate), "yyyy/MM/dd", { locale: ja })}
+                    </div>
+                  )}
+                  {deal.expectedPaymentDate && (
+                    <div className="flex items-center">
+                      <i className="fas fa-calendar-check mr-1"></i>
+                      入金予定: {format(new Date(deal.expectedPaymentDate), "yyyy/MM/dd", { locale: ja })}
+                    </div>
+                  )}
+                  <div className="flex items-center">
+                    <span className={`mr-2 ${deal.paymentConfirmed === "true" ? "text-green-600" : "text-orange-500"}`}>
+                      {deal.paymentConfirmed === "true" ? "✓" : "○"}
+                    </span>
+                    着金確認
+                    {deal.paymentConfirmed === "true" && <span className="ml-1 text-green-600">完了</span>}
+                  </div>
                 </div>
               </div>
             )}

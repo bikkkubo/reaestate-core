@@ -38,6 +38,17 @@ export const deals = pgTable("deals", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   kanbanDealId: integer("kanban_deal_id"),
+  
+  // ⑫AD請求/着金用項目
+  adAmount: integer("ad_amount"),
+  invoiceDate: date("invoice_date"),
+  expectedPaymentDate: date("expected_payment_date"),
+  paymentConfirmed: text("payment_confirmed").default("false"),
+  
+  // ⑪フォローアップ用項目
+  followUpUtilities: text("follow_up_utilities").default("false"),
+  followUpGift: text("follow_up_gift").default("false"),
+  followUpOther: text("follow_up_other"),
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({
@@ -87,6 +98,15 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   landlordName: z.string().optional(),
   landlordAddress: z.string().optional(),
   realEstateAgent: z.string().optional(),
+  // ⑫AD請求/着金用項目
+  adAmount: z.number().optional(),
+  invoiceDate: z.string().optional(),
+  expectedPaymentDate: z.string().optional(),
+  paymentConfirmed: z.string().optional(),
+  // ⑪フォローアップ用項目
+  followUpUtilities: z.string().optional(),
+  followUpGift: z.string().optional(),
+  followUpOther: z.string().optional(),
 });
 
 export type InsertDeal = z.infer<typeof insertDealSchema>;
@@ -102,10 +122,9 @@ export const PHASES = [
   "⑥初期費用入金確認",
   "⑦鍵渡し準備",
   "⑧入居開始",
-  "⑨管理開始",
-  "⑩契約終了",
-  "⑪フォローアップ",
-  "⑫AD請求/着金"
+  "⑨契約終了",
+  "⑩フォローアップ",
+  "⑪AD請求/着金"
 ] as const;
 
 export type Phase = typeof PHASES[number];

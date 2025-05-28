@@ -67,6 +67,15 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
         phase: deal.phase,
         dueDate: deal.dueDate,
         notes: deal.notes || "",
+        // フォローアップ用項目
+        followUpUtilities: deal.followUpUtilities || "false",
+        followUpGift: deal.followUpGift || "false",
+        followUpOther: deal.followUpOther || "",
+        // AD請求/着金用項目
+        adAmount: deal.adAmount,
+        invoiceDate: deal.invoiceDate || "",
+        expectedPaymentDate: deal.expectedPaymentDate || "",
+        paymentConfirmed: deal.paymentConfirmed || "false",
       });
     }
   }, [deal, form]);
@@ -277,6 +286,159 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
                 </FormItem>
               )}
             />
+
+            {/* フォローアップ用項目 */}
+            {deal.phase === "⑩フォローアップ" && (
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="font-medium text-blue-900">フォローアップ項目</h3>
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="followUpUtilities"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value === "true"}
+                            onChange={(e) => field.onChange(e.target.checked ? "true" : "false")}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          ライフライン契約サポート
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="followUpGift"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value === "true"}
+                            onChange={(e) => field.onChange(e.target.checked ? "true" : "false")}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          引っ越し祝い送付
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="followUpOther"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>その他フォローアップ内容</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="その他の対応があれば入力"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* AD請求/着金用項目 */}
+            {deal.phase === "⑪AD請求/着金" && (
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="font-medium text-green-900">AD請求/着金情報</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="adAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>金額</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="金額を入力"
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="invoiceDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>請求日</FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            date={field.value ? new Date(field.value) : undefined}
+                            onDateChange={(date) => {
+                              if (date) {
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                field.onChange(`${year}-${month}-${day}`);
+                              }
+                            }}
+                            placeholder="請求日を選択"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="expectedPaymentDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>入金予定日</FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            date={field.value ? new Date(field.value) : undefined}
+                            onDateChange={(date) => {
+                              if (date) {
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                field.onChange(`${year}-${month}-${day}`);
+                              }
+                            }}
+                            placeholder="入金予定日を選択"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="paymentConfirmed"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value === "true"}
+                            onChange={(e) => field.onChange(e.target.checked ? "true" : "false")}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          着金確認済み
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
               <div className="flex items-center space-x-4">
