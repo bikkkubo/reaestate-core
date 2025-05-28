@@ -6,27 +6,28 @@ const LEDGER_API_BASE = "https://transaction-ledger.replit.app";
  * カンバンボードのDealデータを取引台帳フォーマットに変換
  */
 function convertDealToLedgerFormat(deal: Deal) {
-  const rentPrice = estimateRentFromTitle(deal.title);
-  const managementFee = Math.round(rentPrice * 0.1);
+  // カンバンで入力された情報を優先、未入力の場合はタイトルから推定
+  const rentPrice = deal.rentPrice || estimateRentFromTitle(deal.title);
+  const managementFee = deal.managementFee || Math.round(rentPrice * 0.1);
   
   return {
-    deal_number: `R${new Date().getFullYear()}-${String(deal.id).padStart(3, '0')}`,
-    deal_type: "rental",
-    tenant_name: deal.client || "未設定",
-    tenant_address: "",
+    deal_number: deal.dealNumber || `R${new Date().getFullYear()}-${String(deal.id).padStart(3, '0')}`,
+    deal_type: deal.dealType || "rental",
+    tenant_name: deal.tenantName || deal.client || "未設定",
+    tenant_address: deal.tenantAddress || "",
     important_explanation_date: null,
-    contract_date: deal.phase === "⑩契約終了" ? new Date(deal.dueDate).toISOString() : null,
+    contract_date: deal.contractDate || (deal.phase === "⑩契約終了" ? new Date(deal.dueDate).toISOString() : null),
     rent_price: rentPrice,
     management_fee: managementFee,
     total_rent: rentPrice + managementFee,
-    deposit: null,
-    key_money: null,
-    brokerage: rentPrice,
+    deposit: deal.deposit,
+    key_money: deal.keyMoney,
+    brokerage: deal.brokerage || rentPrice,
     contract_start_date: null,
     contract_end_date: null,
-    landlord_name: "管理会社",
-    landlord_address: null,
-    real_estate_agent: null,
+    landlord_name: deal.landlordName || "管理会社",
+    landlord_address: deal.landlordAddress,
+    real_estate_agent: deal.realEstateAgent,
     other_notes: `Kanban案件ID: ${deal.id}, 優先度: ${deal.priority}, 備考: ${deal.notes || "なし"}`,
     kanban_deal_id: deal.id
   };
