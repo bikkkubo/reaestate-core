@@ -309,6 +309,63 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
                 <div className="space-y-3">
                   <FormField
                     control={form.control}
+                    name="followUpContractPayment"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value === "true"}
+                            onChange={(e) => field.onChange(e.target.checked ? "true" : "false")}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          契約金
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="followUpResidentCard"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value === "true"}
+                            onChange={(e) => field.onChange(e.target.checked ? "true" : "false")}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          住民票
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="followUpMyNumber"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value === "true"}
+                            onChange={(e) => field.onChange(e.target.checked ? "true" : "false")}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          マイナンバー
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="followUpUtilities"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center space-x-3 space-y-0">
@@ -321,7 +378,7 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">
-                          ライフライン契約サポート
+                          ライフラインの連絡
                         </FormLabel>
                       </FormItem>
                     )}
