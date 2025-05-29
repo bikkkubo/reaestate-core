@@ -41,21 +41,23 @@ export function KanbanBoard() {
       const response = await apiRequest("PATCH", `/api/deals/${id}`, { phase });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (updatedDeal, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/deals"] });
       toast({
         title: "成功",
-        description: "案件のフェーズを更新しました",
+        description: `案件が「${variables.phase}」に移動しました`,
       });
+      
+      // フェーズ移動時にLINE通知ポップアップを表示
+      const deal = deals.find(d => d.id === variables.id);
+      if (deal) {
+        setLineNotificationData({
+          deal: { ...deal, phase: variables.phase },
+          newPhase: variables.phase
+        });
+      }
     },
-    onError: (error) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/deals"] });
-      toast({
-        variant: "destructive",
-        title: "エラー",
-        description: "フェーズの更新に失敗しました",
-      });
-    },
+
     // Optimistic update
     onMutate: async ({ id, phase }) => {
       await queryClient.cancelQueries({ queryKey: ["/api/deals"] });

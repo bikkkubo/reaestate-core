@@ -123,10 +123,28 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
                 <div className="font-medium text-blue-900 mb-1">フォローアップ内容:</div>
                 <div className="text-blue-800 space-y-1">
                   <div className="flex items-center">
+                    <span className={`mr-2 ${deal.followUpContractPayment === "true" ? "text-green-600" : "text-gray-400"}`}>
+                      {deal.followUpContractPayment === "true" ? "✓" : "○"}
+                    </span>
+                    契約金
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`mr-2 ${deal.followUpResidentCard === "true" ? "text-green-600" : "text-gray-400"}`}>
+                      {deal.followUpResidentCard === "true" ? "✓" : "○"}
+                    </span>
+                    住民票
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`mr-2 ${deal.followUpMyNumber === "true" ? "text-green-600" : "text-gray-400"}`}>
+                      {deal.followUpMyNumber === "true" ? "✓" : "○"}
+                    </span>
+                    マイナンバー
+                  </div>
+                  <div className="flex items-center">
                     <span className={`mr-2 ${deal.followUpUtilities === "true" ? "text-green-600" : "text-gray-400"}`}>
                       {deal.followUpUtilities === "true" ? "✓" : "○"}
                     </span>
-                    ライフライン契約サポート
+                    ライフラインの連絡
                   </div>
                   <div className="flex items-center">
                     <span className={`mr-2 ${deal.followUpGift === "true" ? "text-green-600" : "text-gray-400"}`}>

@@ -45,7 +45,10 @@ export const deals = pgTable("deals", {
   expectedPaymentDate: date("expected_payment_date"),
   paymentConfirmed: text("payment_confirmed").default("false"),
   
-  // ⑪フォローアップ用項目
+  // ⑩フォローアップ用項目
+  followUpContractPayment: text("follow_up_contract_payment").default("false"),
+  followUpResidentCard: text("follow_up_resident_card").default("false"),
+  followUpMyNumber: text("follow_up_my_number").default("false"),
   followUpUtilities: text("follow_up_utilities").default("false"),
   followUpGift: text("follow_up_gift").default("false"),
   followUpOther: text("follow_up_other"),
@@ -103,7 +106,10 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   invoiceDate: z.string().optional(),
   expectedPaymentDate: z.string().optional(),
   paymentConfirmed: z.string().optional(),
-  // ⑪フォローアップ用項目
+  // ⑩フォローアップ用項目
+  followUpContractPayment: z.string().optional(),
+  followUpResidentCard: z.string().optional(),
+  followUpMyNumber: z.string().optional(),
   followUpUtilities: z.string().optional(),
   followUpGift: z.string().optional(),
   followUpOther: z.string().optional(),
