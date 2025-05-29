@@ -52,8 +52,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(404).json({ message: "Deal not found" });
         }
 
-        // ⑩契約終了フェーズに移動した場合、取引台帳に自動送信
-        if (req.body.phase === "⑩契約終了") {
+        // ⑨契約終了フェーズに移動した場合、取引台帳に自動送信
+        if (req.body.phase === "⑨契約終了") {
           try {
             const { sendDealToLedger } = await import("./ledger");
             const ledgerResult = await sendDealToLedger(deal);
