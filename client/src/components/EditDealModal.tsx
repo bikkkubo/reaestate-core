@@ -76,6 +76,21 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
         invoiceDate: deal.invoiceDate || "",
         expectedPaymentDate: deal.expectedPaymentDate || "",
         paymentConfirmed: deal.paymentConfirmed || "false",
+        // 取引台帳項目
+        dealNumber: deal.dealNumber || "",
+        dealType: deal.dealType || "",
+        tenantName: deal.tenantName || "",
+        tenantAddress: deal.tenantAddress || "",
+        contractDate: deal.contractDate || "",
+        rentPrice: deal.rentPrice,
+        managementFee: deal.managementFee,
+        deposit: deal.deposit,
+        keyMoney: deal.keyMoney,
+        brokerage: deal.brokerage,
+        adFee: deal.adFee,
+        landlordName: deal.landlordName || "",
+        landlordAddress: deal.landlordAddress || "",
+        realEstateAgent: deal.realEstateAgent || "",
       });
     }
   }, [deal, form]);
@@ -439,6 +454,243 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
                 </div>
               </div>
             )}
+
+            {/* 取引台帳共通項目 */}
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="font-medium text-purple-900">取引台帳情報</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="dealNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>案件番号</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="R2025-001"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dealType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>取引種別</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="rental"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="tenantName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>借主名</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="借主の氏名"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="tenantAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>借主住所</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="借主の住所"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="contractDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>契約日</FormLabel>
+                      <FormControl>
+                        <DatePicker
+                          date={field.value ? new Date(field.value) : undefined}
+                          onDateChange={(date) => {
+                            if (date) {
+                              const year = date.getFullYear();
+                              const month = String(date.getMonth() + 1).padStart(2, '0');
+                              const day = String(date.getDate()).padStart(2, '0');
+                              field.onChange(`${year}-${month}-${day}`);
+                            }
+                          }}
+                          placeholder="契約日を選択"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="rentPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>賃料</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="賃料を入力"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="managementFee"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>管理費</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="管理費を入力"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="deposit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>敷金</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="敷金を入力"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="keyMoney"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>礼金</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="礼金を入力"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="brokerage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>仲介手数料</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="仲介手数料を入力"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="adFee"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>AD料</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="AD料を入力"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="landlordName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>貸主名</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="貸主の氏名"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="landlordAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>貸主住所</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="貸主の住所"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="realEstateAgent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>仲介会社</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="仲介会社名"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
               <div className="flex items-center space-x-4">
