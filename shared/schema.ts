@@ -1,12 +1,12 @@
-import { pgTable, text, uuid, integer, date, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, date, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const deals = pgTable("deals", {
   // 取引台帳システムの既存項目
-  id: uuid("id").primaryKey().defaultRandom(),
-  dealNumber: text("deal_number").notNull(),
-  dealType: text("deal_type").notNull(),
+  id: serial("id").primaryKey(),
+  dealNumber: text("deal_number"),
+  dealType: text("deal_type"),
   tenantName: text("tenant_name"),
   tenantAddress: text("tenant_address"),
   importantExplanationDate: date("important_explanation_date"),

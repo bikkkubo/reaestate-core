@@ -240,5 +240,5 @@ export class DatabaseStorage implements IStorage {
 }
 
 // 一時的にMemStorageを使用してシステムを復旧
-// Temporarily using MemStorage until database connection is stable
+// Temporarily using MemStorage while database schema is being synchronized
 export const storage = new MemStorage();

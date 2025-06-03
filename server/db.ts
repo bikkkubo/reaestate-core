@@ -3,9 +3,8 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
-// WebSocket設定を無効化してHTTPSを使用
-neonConfig.webSocketConstructor = undefined;
-neonConfig.useSecureWebSocket = false;
+// WebSocket設定を有効化
+neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
