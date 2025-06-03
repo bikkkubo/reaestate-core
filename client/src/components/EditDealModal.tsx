@@ -167,7 +167,7 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[900px] w-full max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <i className="fas fa-edit text-blue-600"></i>
@@ -180,9 +180,10 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
+        <div className="flex-1 overflow-y-auto pr-2">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
@@ -809,8 +810,9 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
                 </Button>
               </div>
             </div>
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </div>
 
         {/* Manual LINE Message Modal */}
         <ManualLineMessageModal

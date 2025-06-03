@@ -52,6 +52,9 @@ export const deals = pgTable("deals", {
   followUpUtilities: text("follow_up_utilities").default("false"),
   followUpGift: text("follow_up_gift").default("false"),
   followUpOther: text("follow_up_other"),
+  
+  // 顧客チェックリスト項目
+  customerChecklistUrl: text("customer_checklist_url"),
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({
@@ -113,6 +116,8 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   followUpUtilities: z.string().optional(),
   followUpGift: z.string().optional(),
   followUpOther: z.string().optional(),
+  // 顧客チェックリスト項目
+  customerChecklistUrl: z.string().optional(),
 });
 
 export type InsertDeal = z.infer<typeof insertDealSchema>;
