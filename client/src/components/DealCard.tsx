@@ -203,6 +203,21 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
                 <span className="text-xs text-green-600">LINE連携済み</span>
               </div>
             )}
+
+            {deal.customerChecklistUrl && (
+              <div className="mt-2">
+                <a
+                  href={deal.customerChecklistUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <i className="fas fa-external-link-alt mr-1"></i>
+                  顧客チェックリスト
+                </a>
+              </div>
+            )}
             
             {!isCompleted && (
               <div className="flex items-center justify-between">

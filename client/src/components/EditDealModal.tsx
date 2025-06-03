@@ -67,6 +67,7 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
         phase: deal.phase,
         dueDate: deal.dueDate,
         notes: deal.notes || "",
+        customerChecklistUrl: deal.customerChecklistUrl || "",
         // フォローアップ用項目
         followUpUtilities: deal.followUpUtilities || "false",
         followUpGift: deal.followUpGift || "false",
@@ -295,6 +296,23 @@ export function EditDealModal({ deal, open, onClose }: EditDealModalProps) {
                     <Textarea
                       placeholder="追加情報や特記事項があれば入力してください"
                       rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="customerChecklistUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>顧客チェックリストURL（任意）</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://example.com/checklist"
                       {...field}
                     />
                   </FormControl>
