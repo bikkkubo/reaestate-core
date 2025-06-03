@@ -216,7 +216,10 @@ export async function sendPhaseChangeNotification(
     message = message
       .replace('{clientName}', deal.client || '')
       .replace('{propertyName}', deal.title || '')
-      .replace('{dueDate}', deal.dueDate || '');
+      .replace('{dueDate}', deal.dueDate || '')
+      .replace('{phase}', deal.phase || '')
+      .replace('{priority}', deal.priority || '')
+      .replace('{customerChecklistUrl}', deal.customerChecklistUrl || '');
 
     return await sendLinePushMessage(deal.lineUserId, message);
   } catch (error) {

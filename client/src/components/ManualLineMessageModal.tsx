@@ -29,6 +29,7 @@ const AVAILABLE_PLACEHOLDERS = [
   { key: "{dueDate}", description: "期限日", example: "2025年5月30日" },
   { key: "{phase}", description: "現在のフェーズ", example: "②内見調整" },
   { key: "{priority}", description: "優先度", example: "高" },
+  { key: "{customerChecklistUrl}", description: "顧客チェックリストURL", example: "https://example.com/checklist" },
 ];
 
 // 定型テンプレート
@@ -150,6 +151,7 @@ export function ManualLineMessageModal({ deal, open, onClose }: ManualLineMessag
     result = result.replace(/{dueDate}/g, new Date(dealData.dueDate).toLocaleDateString('ja-JP'));
     result = result.replace(/{phase}/g, dealData.phase || "");
     result = result.replace(/{priority}/g, dealData.priority || "");
+    result = result.replace(/{customerChecklistUrl}/g, dealData.customerChecklistUrl || "");
     return result;
   };
 

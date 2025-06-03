@@ -141,6 +141,7 @@ export function LineNotificationModal({ deal, newPhase, open, onClose }: LineNot
     result = result.replace(/{dueDate}/g, new Date(dealData.dueDate).toLocaleDateString('ja-JP'));
     result = result.replace(/{phase}/g, dealData.phase || "");
     result = result.replace(/{priority}/g, dealData.priority || "");
+    result = result.replace(/{customerChecklistUrl}/g, dealData.customerChecklistUrl || "");
     return result;
   };
 

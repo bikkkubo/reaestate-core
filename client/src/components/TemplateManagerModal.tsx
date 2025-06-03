@@ -348,7 +348,8 @@ export function TemplateManagerModal({ open, onClose, onTemplateUpdate }: Templa
 {propertyName} - 物件名
 {dueDate} - 期限日
 {phase} - フェーズ
-{priority} - 優先度`}
+{priority} - 優先度
+{customerChecklistUrl} - 顧客チェックリストURL`}
                     className="min-h-[300px]"
                   />
                   <p className="text-xs text-gray-500">{newTemplateContent.length} 文字</p>
