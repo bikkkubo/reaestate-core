@@ -239,5 +239,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// 一時的にMemStorageを使用してシステムを安定させます
-export const storage = new MemStorage();
+// PostgreSQLデータベースを使用してデータを永続化
+export const storage = new DatabaseStorage();
