@@ -226,7 +226,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteDeal(id: number): Promise<boolean> {
     const result = await db.delete(deals).where(eq(deals.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async syncWithGoogleSheets(): Promise<{ synced: number; errors: string[] }> {
@@ -239,6 +239,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// 一時的にMemStorageを使用してシステムを復旧
-// Temporarily using MemStorage while database schema is being synchronized
-export const storage = new MemStorage();
+// PostgreSQLデータベースを使用してデータを永続化
+export const storage = new DatabaseStorage();
