@@ -123,12 +123,32 @@ export function MyosokuUpload({ onUploadSuccess, disabled = false }: MyosokuUplo
             }),
           });
 
+          console.log('Upload response status:', response.status);
+          console.log('Upload response headers:', response.headers.get('content-type'));
+
+          const responseText = await response.text();
+          console.log('Upload response text:', responseText);
+
           if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Base64アップロードに失敗しました');
+            let errorMessage = 'Base64アップロードに失敗しました';
+            try {
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.error || errorMessage;
+            } catch (parseError) {
+              console.error('Failed to parse error response as JSON:', parseError);
+              errorMessage = `サーバーエラー (${response.status}): ${responseText.substring(0, 200)}`;
+            }
+            throw new Error(errorMessage);
           }
 
-          const result = await response.json();
+          let result;
+          try {
+            result = JSON.parse(responseText);
+          } catch (parseError) {
+            console.error('Failed to parse success response as JSON:', parseError);
+            throw new Error('サーバーレスポンスの解析に失敗しました');
+          }
+          
           resolve(result);
         } catch (error) {
           reject(error);
@@ -148,12 +168,30 @@ export function MyosokuUpload({ onUploadSuccess, disabled = false }: MyosokuUplo
       body: formData,
     });
 
+    console.log('FormData response status:', response.status);
+    console.log('FormData response headers:', response.headers.get('content-type'));
+
+    const responseText = await response.text();
+    console.log('FormData response text:', responseText);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'FormDataアップロードに失敗しました');
+      let errorMessage = 'FormDataアップロードに失敗しました';
+      try {
+        const errorData = JSON.parse(responseText);
+        errorMessage = errorData.error || errorMessage;
+      } catch (parseError) {
+        console.error('Failed to parse FormData error response as JSON:', parseError);
+        errorMessage = `サーバーエラー (${response.status}): ${responseText.substring(0, 200)}`;
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse FormData success response as JSON:', parseError);
+      throw new Error('サーバーレスポンスの解析に失敗しました');
+    }
   };
 
   const handleUploadClick = () => {

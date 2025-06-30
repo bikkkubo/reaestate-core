@@ -263,8 +263,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // マイソク画像アップロードとAI解析（Base64対応）
   app.post("/api/myosoku/upload-base64", async (req, res) => {
+    // Content-Typeヘッダーを確実にJSONに設定
+    res.setHeader('Content-Type', 'application/json');
+    
     try {
       console.log("📤 Myosoku base64 upload request received");
+      console.log("📊 Request body keys:", Object.keys(req.body || {}));
       
       const { imageData, fileName, mimeType } = req.body;
       
@@ -340,6 +344,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // マイソク画像アップロードとAI解析（従来のmulter方式）
   app.post("/api/myosoku/upload", upload.single('myosoku'), async (req, res) => {
+    // Content-Typeヘッダーを確実にJSONに設定
+    res.setHeader('Content-Type', 'application/json');
+    
     try {
       console.log("📤 Myosoku upload request received");
       console.log("📄 File info:", req.file ? {

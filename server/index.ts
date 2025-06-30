@@ -4,8 +4,9 @@ import { setupVite, serveStatic, log } from "./vite";
 import { startNotificationScheduler } from "./notifications";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// JSONのサイズ制限を50MBに増加（Base64画像対応）
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -40,12 +41,21 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    console.error(`❌ Error handling ${req.method} ${req.path}:`, err);
+    
+    // Content-Typeを確実にJSONに設定
+    res.setHeader('Content-Type', 'application/json');
+    
+    res.status(status).json({ 
+      error: message,
+      type: err.constructor.name || 'UnknownError',
+      path: req.path,
+      method: req.method
+    });
   });
 
   // importantly only setup vite in development and after
