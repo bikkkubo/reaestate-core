@@ -245,23 +245,386 @@ export function updateMessageTemplate(phase: string, template: string): void {
 /**
  * LINE Webhook処理 - 顧客からのメッセージを受信
  */
-export async function handleLineWebhook(body: any): Promise<boolean> {
+export async function handleLineWebhook(body: any, query?: any): Promise<boolean> {
   try {
     const events = body.events;
     
     for (const event of events) {
-      if (event.type === 'message' && event.message.type === 'text') {
-        const userId = event.source.userId;
+      const userId = event.source.userId;
+      
+      if (event.type === 'follow') {
+        // 友だち追加イベント処理
+        await handleFollowEvent(userId, query);
+        
+      } else if (event.type === 'message' && event.message.type === 'text') {
         const messageText = event.message.text.trim();
         
         // 顧客登録プロセスを処理
         await processCustomerRegistration(userId, messageText);
+        
+      } else if (event.type === 'postback') {
+        // ボタンタップなどのポストバックイベント処理
+        await handlePostbackEvent(userId, event.postback);
       }
     }
     
     return true;
   } catch (error) {
     console.error('Error handling LINE webhook:', error);
+    return false;
+  }
+}
+
+/**
+ * 友だち追加イベント処理
+ */
+export async function handleFollowEvent(userId: string, query?: any): Promise<void> {
+  try {
+    const { storage } = await import('./storage');
+    
+    // QRコードからの友だち追加の場合
+    if (query && query.deal) {
+      await handleQRCodeFollow(userId, query.deal);
+      return;
+    }
+    
+    // LINE表示名を取得
+    const userProfile = await getLineUserProfile(userId);
+    
+    // 自動マッチングを試行
+    const matchResult = await attemptAutoMatching(userId, userProfile);
+    
+    if (matchResult.success) {
+      // 自動マッチング成功
+      await sendWelcomeMessage(userId, matchResult.deal!, 'auto');
+    } else if (matchResult.candidates && matchResult.candidates.length > 0) {
+      // 複数候補がある場合、選択メニューを送信
+      await sendCandidateSelectionMenu(userId, matchResult.candidates, userProfile);
+    } else {
+      // マッチしない場合、手動登録を促す
+      await sendManualRegistrationPrompt(userId, userProfile);
+    }
+    
+  } catch (error) {
+    console.error('Error handling follow event:', error);
+    await sendLinePushMessage(userId, 
+      `友だち追加ありがとうございます！\n\n` +
+      `お客様の案件情報を確認いたしますので、お名前を教えてください。`
+    );
+  }
+}
+
+/**
+ * QRコードからの友だち追加処理
+ */
+async function handleQRCodeFollow(userId: string, dealToken: string): Promise<void> {
+  try {
+    const { storage } = await import('./storage');
+    
+    // トークンから案件を検索
+    const deals = await storage.getAllDeals();
+    const deal = deals.find(d => d.qrCodeToken === dealToken);
+    
+    if (!deal) {
+      await sendLinePushMessage(userId, 
+        `申し訳ございません。案件情報が見つかりませんでした。\n` +
+        `お手数ですが、担当者までお問い合わせください。`
+      );
+      return;
+    }
+    
+    // 既に他のユーザーが連携済みかチェック
+    if (deal.lineUserId && deal.lineUserId !== userId) {
+      await sendLinePushMessage(userId, 
+        `この案件は既に他のアカウントと連携済みです。\n` +
+        `お心当たりがない場合は、担当者までお問い合わせください。`
+      );
+      return;
+    }
+    
+    // LINE連携を実行
+    await storage.updateDeal(deal.id, { 
+      lineUserId: userId,
+      lineConnectedAt: new Date(),
+      lineConnectionMethod: 'qr'
+    });
+    
+    // ウェルカムメッセージを送信
+    await sendWelcomeMessage(userId, deal, 'qr');
+    
+  } catch (error) {
+    console.error('Error handling QR code follow:', error);
+    await sendLinePushMessage(userId, 
+      `システムエラーが発生しました。担当者までお問い合わせください。`
+    );
+  }
+}
+
+/**
+ * 自動マッチングを試行
+ */
+async function attemptAutoMatching(userId: string, userProfile: any): Promise<{
+  success: boolean;
+  deal?: any;
+  candidates?: any[];
+}> {
+  try {
+    const { storage } = await import('./storage');
+    const deals = await storage.getAllDeals();
+    
+    // 既に連携済みかチェック
+    const existingDeal = deals.find(deal => deal.lineUserId === userId);
+    if (existingDeal) {
+      return { success: true, deal: existingDeal };
+    }
+    
+    if (!userProfile?.displayName) {
+      return { success: false, candidates: [] };
+    }
+    
+    // LINE表示名で案件を検索（未連携のもののみ）
+    const candidates = deals.filter(deal => 
+      !deal.lineUserId && 
+      deal.client && 
+      (deal.client.includes(userProfile.displayName) || 
+       userProfile.displayName.includes(deal.client))
+    );
+    
+    if (candidates.length === 1) {
+      // 1件だけマッチした場合、自動連携
+      const deal = candidates[0];
+      await storage.updateDeal(deal.id, { 
+        lineUserId: userId,
+        lineDisplayName: userProfile.displayName,
+        lineConnectedAt: new Date(),
+        lineConnectionMethod: 'auto'
+      });
+      
+      return { success: true, deal };
+    }
+    
+    return { success: false, candidates };
+    
+  } catch (error) {
+    console.error('Error in auto matching:', error);
+    return { success: false, candidates: [] };
+  }
+}
+
+/**
+ * LINEユーザープロフィールを取得
+ */
+async function getLineUserProfile(userId: string): Promise<any> {
+  try {
+    if (!process.env.LINE_CHANNEL_ACCESS_TOKEN) {
+      console.log('LINE_CHANNEL_ACCESS_TOKEN not configured');
+      return null;
+    }
+    
+    const response = await fetch(`https://api.line.me/v2/bot/profile/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`
+      }
+    });
+    
+    if (!response.ok) {
+      console.error('Failed to get LINE user profile:', response.status);
+      return null;
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error getting LINE user profile:', error);
+    return null;
+  }
+}
+
+/**
+ * ウェルカムメッセージを送信
+ */
+async function sendWelcomeMessage(userId: string, deal: any, method: 'qr' | 'auto'): Promise<void> {
+  const methodText = method === 'qr' ? 'QRコード' : '自動認識';
+  
+  const message = 
+    `${deal.client}様、友だち追加ありがとうございます！\n\n` +
+    `お客様の案件情報を${methodText}で確認いたしました。\n\n` +
+    `📋 案件名：${deal.title || '物件情報準備中'}\n` +
+    `📍 現在の状況：${deal.phase}\n\n` +
+    `今後、お手続きの進捗状況をこちらのLINEでお知らせいたします。\n` +
+    `ご質問やご不明点がございましたら、お気軽にメッセージをお送りください。\n\n` +
+    `引き続きよろしくお願いいたします！`;
+  
+  await sendLinePushMessage(userId, message);
+}
+
+/**
+ * 候補選択メニューを送信
+ */
+async function sendCandidateSelectionMenu(userId: string, candidates: any[], userProfile: any): Promise<void> {
+  if (candidates.length <= 3) {
+    // 3件以下の場合はQuick Replyで選択
+    await sendCandidateQuickReply(userId, candidates, userProfile);
+  } else {
+    // 4件以上の場合はテキストリストで選択
+    await sendCandidateTextList(userId, candidates, userProfile);
+  }
+}
+
+/**
+ * Quick Replyで候補選択
+ */
+async function sendCandidateQuickReply(userId: string, candidates: any[], userProfile: any): Promise<void> {
+  const displayName = userProfile?.displayName || 'お客様';
+  
+  const message = {
+    type: 'text',
+    text: `${displayName}様、友だち追加ありがとうございます！\n\n` +
+          `お客様に該当する案件を下記から選択してください：`,
+    quickReply: {
+      items: candidates.map((deal, index) => ({
+        type: 'action',
+        action: {
+          type: 'postback',
+          label: `${deal.client}様 - ${deal.title || '案件'}`,
+          data: `action=select_deal&deal_id=${deal.id}&user_id=${userId}`,
+          displayText: `${deal.client}様の案件を選択`
+        }
+      })).concat([{
+        type: 'action',
+        action: {
+          type: 'postback',
+          label: '該当なし',
+          data: `action=no_match&user_id=${userId}`,
+          displayText: '該当する案件がありません'
+        }
+      }])
+    }
+  };
+  
+  await sendLineMessage(userId, message);
+}
+
+/**
+ * テキストリストで候補選択
+ */
+async function sendCandidateTextList(userId: string, candidates: any[], userProfile: any): Promise<void> {
+  const displayName = userProfile?.displayName || 'お客様';
+  
+  let message = `${displayName}様、友だち追加ありがとうございます！\n\n` +
+               `複数の案件が見つかりました。該当する番号を送信してください：\n\n`;
+  
+  candidates.forEach((deal, index) => {
+    message += `${index + 1}. ${deal.client}様 - ${deal.title || '物件情報準備中'}\n`;
+  });
+  
+  message += `\n該当する案件がない場合は「該当なし」と送信してください。`;
+  
+  await sendLinePushMessage(userId, message);
+}
+
+/**
+ * 手動登録を促すメッセージを送信
+ */
+async function sendManualRegistrationPrompt(userId: string, userProfile: any): Promise<void> {
+  const displayName = userProfile?.displayName || 'お客様';
+  
+  const message = 
+    `${displayName}様、友だち追加ありがとうございます！\n\n` +
+    `お客様の案件情報を確認させていただきます。\n` +
+    `恐れ入りますが、お申込み時のお名前（フルネーム）を教えてください。\n\n` +
+    `例：田中太郎\n\n` +
+    `※お申込み書類に記載されているお名前をご入力ください。`;
+  
+  await sendLinePushMessage(userId, message);
+}
+
+/**
+ * ポストバックイベント処理
+ */
+async function handlePostbackEvent(userId: string, postback: any): Promise<void> {
+  try {
+    const data = new URLSearchParams(postback.data);
+    const action = data.get('action');
+    
+    if (action === 'select_deal') {
+      const dealId = parseInt(data.get('deal_id') || '0');
+      await handleDealSelection(userId, dealId);
+      
+    } else if (action === 'no_match') {
+      await sendManualRegistrationPrompt(userId, null);
+    }
+    
+  } catch (error) {
+    console.error('Error handling postback event:', error);
+    await sendLinePushMessage(userId, 
+      `申し訳ございません。処理中にエラーが発生しました。\n` +
+      `お手数ですが、担当者までお問い合わせください。`
+    );
+  }
+}
+
+/**
+ * 案件選択処理
+ */
+async function handleDealSelection(userId: string, dealId: number): Promise<void> {
+  try {
+    const { storage } = await import('./storage');
+    
+    const deal = await storage.getDealById(dealId);
+    if (!deal) {
+      await sendLinePushMessage(userId, `案件情報が見つかりませんでした。`);
+      return;
+    }
+    
+    // LINE連携を実行
+    await storage.updateDeal(dealId, { 
+      lineUserId: userId,
+      lineConnectedAt: new Date(),
+      lineConnectionMethod: 'manual'
+    });
+    
+    await sendWelcomeMessage(userId, deal, 'auto');
+    
+  } catch (error) {
+    console.error('Error handling deal selection:', error);
+    await sendLinePushMessage(userId, 
+      `連携処理中にエラーが発生しました。担当者までお問い合わせください。`
+    );
+  }
+}
+
+/**
+ * LINE メッセージ送信（オブジェクト形式）
+ */
+async function sendLineMessage(userId: string, message: any): Promise<boolean> {
+  try {
+    if (!process.env.LINE_CHANNEL_ACCESS_TOKEN) {
+      console.log('LINE_CHANNEL_ACCESS_TOKEN not configured');
+      return false;
+    }
+
+    const payload = {
+      to: userId,
+      messages: [message]
+    };
+
+    const response = await fetch(LINE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`LINE API error: ${response.status}`);
+    }
+
+    console.log(`LINE message sent to user ${userId}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending LINE message:', error);
     return false;
   }
 }

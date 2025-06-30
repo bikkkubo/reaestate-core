@@ -191,6 +191,10 @@ export class DatabaseStorage implements IStorage {
     return deal || undefined;
   }
 
+  async getDealById(id: number): Promise<Deal | undefined> {
+    return this.getDeal(id);
+  }
+
   async createDeal(insertDeal: InsertDeal): Promise<Deal> {
     const [deal] = await db
       .insert(deals)

@@ -7,6 +7,7 @@ import { triggerManualReminders } from "./notifications";
 import { sendDealToLedger, syncCompletedDealsToLedger } from "./ledger";
 import { upload, serveUpload } from "./upload";
 import { analyzeMyosokuImage } from "./vision";
+import { generateDealQRCode, generateQRCodeDataURL, generateQRToken } from "./qrcode";
 import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -297,6 +298,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // アップロードされたファイルを提供
   app.get("/api/uploads/:filename", serveUpload);
 
+  // QRコード画像を提供
+  app.get("/api/uploads/qr/:filename", (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(process.cwd(), "uploads", "qr", filename);
+    
+    if (!require('fs').existsSync(filePath)) {
+      return res.status(404).json({ error: "QRコードファイルが見つかりません" });
+    }
+    
+    res.sendFile(filePath);
+  });
+
   // 案件にマイソク情報を更新
   app.patch("/api/deals/:id/myosoku", async (req, res) => {
     try {
@@ -320,6 +333,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("マイソク情報更新エラー:", error);
       res.status(500).json({ message: "マイソク情報の更新に失敗しました" });
+    }
+  });
+
+  // LINE連携QRコード生成
+  app.post("/api/deals/:id/qrcode", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id);
+      
+      if (isNaN(dealId)) {
+        return res.status(400).json({ message: "Invalid deal ID" });
+      }
+
+      // 既存のQRコードトークンをチェック
+      const existingDeal = await storage.getDealById(dealId);
+      if (!existingDeal) {
+        return res.status(404).json({ message: "案件が見つかりません" });
+      }
+
+      let token = existingDeal.qrCodeToken;
+      
+      // トークンが存在しない場合は新規生成
+      if (!token) {
+        token = generateQRToken();
+      }
+
+      // QRコードを生成
+      const qrCodeData = await generateDealQRCode(dealId, token);
+      
+      // データベースに保存
+      const updatedDeal = await storage.updateDeal(dealId, {
+        qrCodeToken: qrCodeData.token,
+        qrCodeUrl: qrCodeData.url,
+        // qrCodeImagePathは内部的に保存するが、APIレスポンスには含めない
+      });
+
+      res.json({
+        success: true,
+        qrCodeUrl: qrCodeData.qrCodeImageUrl,
+        lineUrl: qrCodeData.url,
+        token: qrCodeData.token
+      });
+    } catch (error) {
+      console.error("QRコード生成エラー:", error);
+      res.status(500).json({ message: "QRコードの生成に失敗しました" });
+    }
+  });
+
+  // QRコードをDataURLで取得（表示用）
+  app.get("/api/deals/:id/qrcode", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id);
+      
+      if (isNaN(dealId)) {
+        return res.status(400).json({ message: "Invalid deal ID" });
+      }
+
+      const deal = await storage.getDealById(dealId);
+      if (!deal) {
+        return res.status(404).json({ message: "案件が見つかりません" });
+      }
+
+      let token = deal.qrCodeToken;
+      
+      // トークンが存在しない場合は新規生成
+      if (!token) {
+        token = generateQRToken();
+        await storage.updateDeal(dealId, { qrCodeToken: token });
+      }
+
+      // QRコードをDataURLで生成
+      const dataURL = await generateQRCodeDataURL(dealId, token);
+      
+      res.json({
+        success: true,
+        qrCodeDataURL: dataURL,
+        token: token
+      });
+    } catch (error) {
+      console.error("QRコード取得エラー:", error);
+      res.status(500).json({ message: "QRコードの取得に失敗しました" });
     }
   });
 

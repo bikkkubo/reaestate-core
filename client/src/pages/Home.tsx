@@ -1,14 +1,27 @@
 import { useState } from "react";
 import { KanbanBoard } from "@/components/KanbanBoard";
+import { LineConnectionDashboard } from "@/components/LineConnectionDashboard";
 import { AddDealModal } from "@/components/AddDealModal";
 import { TemplateManagerModal } from "@/components/TemplateManagerModal";
 import { Button } from "@/components/ui/button";
-import { Building2, Settings, RefreshCw, Bell, Plus, CheckCircle } from "lucide-react";
+import { Building2, Settings, RefreshCw, Bell, Plus, CheckCircle, BarChart3, MessageCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   const [templateUpdateKey, setTemplateUpdateKey] = useState(0);
+  const [currentView, setCurrentView] = useState<'kanban' | 'dashboard'>('kanban');
+
+  // Fetch deals data for the dashboard
+  const { data: deals = [], refetch: refetchDeals } = useQuery({
+    queryKey: ['deals'],
+    queryFn: async () => {
+      const response = await fetch('/api/deals');
+      if (!response.ok) throw new Error('Failed to fetch deals');
+      return response.json();
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -31,6 +44,32 @@ export default function Home() {
             </div>
             
             <div className="flex items-center space-x-3">
+              {/* View Toggle */}
+              <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+                <button
+                  onClick={() => setCurrentView('kanban')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentView === 'kanban'
+                      ? 'bg-blue-500 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span>案件管理</span>
+                </button>
+                <button
+                  onClick={() => setCurrentView('dashboard')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentView === 'dashboard'
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  <span>LINE連携</span>
+                </button>
+              </div>
+              
               <div className="flex items-center space-x-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
                 <CheckCircle className="h-3 w-3 text-emerald-500" />
                 <span className="text-xs font-medium text-emerald-700">同期完了</span>
@@ -97,7 +136,16 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="w-full">
-        <KanbanBoard />
+        {currentView === 'kanban' ? (
+          <KanbanBoard />
+        ) : (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <LineConnectionDashboard 
+              deals={deals} 
+              onRefresh={() => refetchDeals()} 
+            />
+          </div>
+        )}
       </main>
 
       {/* Add Deal Modal */}

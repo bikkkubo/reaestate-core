@@ -1,7 +1,8 @@
 import { Deal, PRIORITY_COLORS } from "@shared/schema";
 import { format, isAfter, differenceInDays } from "date-fns";
 import { ja } from "date-fns/locale";
-import { Calendar, ExternalLink, Edit3, MessageCircle, CheckCircle2, AlertTriangle, User, FileImage } from "lucide-react";
+import { Calendar, ExternalLink, Edit3, MessageCircle, CheckCircle2, AlertTriangle, User, FileImage, QrCode, Link2 } from "lucide-react";
+import { useState } from "react";
 
 interface DealCardProps {
   deal: Deal;
@@ -11,10 +12,14 @@ interface DealCardProps {
 }
 
 export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage }: DealCardProps) {
-  const dueDate = new Date(deal.dueDate);
+  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+  const [qrCodeLoading, setQrCodeLoading] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
+  
+  const dueDate = new Date(deal.dueDate || new Date());
   const today = new Date();
-  const isOverdue = isAfter(today, dueDate) && !isCompleted;
-  const daysUntilDue = differenceInDays(dueDate, today);
+  const isOverdue = deal.dueDate ? isAfter(today, dueDate) && !isCompleted : false;
+  const daysUntilDue = deal.dueDate ? differenceInDays(dueDate, today) : 0;
 
   const getPriorityColor = (priority: string) => {
     return PRIORITY_COLORS[priority as keyof typeof PRIORITY_COLORS] || "bg-gray-500";
@@ -27,6 +32,26 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
     if (daysUntilDue <= 7) return `${daysUntilDue}日後`;
     if (daysUntilDue <= 30) return `${Math.ceil(daysUntilDue / 7)}週間後`;
     return `${Math.ceil(daysUntilDue / 30)}ヶ月後`;
+  };
+
+  const handleGenerateQrCode = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQrCodeLoading(true);
+    
+    try {
+      const response = await fetch(`/api/deals/${deal.id}/qrcode`);
+      if (response.ok) {
+        const data = await response.json();
+        setQrCodeData(data.qrCodeDataURL);
+        setShowQrCode(true);
+      } else {
+        console.error('Failed to generate QR code');
+      }
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    } finally {
+      setQrCodeLoading(false);
+    }
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -201,12 +226,61 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
 
 
 
-            {deal.lineUserId && (
+            {deal.lineUserId ? (
               <div className="flex items-center space-x-2">
                 <div className="p-1.5 bg-emerald-100/60 rounded-lg">
                   <MessageCircle className="h-3 w-3 text-emerald-600" />
                 </div>
                 <span className="text-xs text-emerald-700 font-medium">LINE連携済み</span>
+                {deal.lineDisplayName && (
+                  <span className="text-xs text-emerald-600">({deal.lineDisplayName})</span>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-1.5 bg-blue-100/60 rounded-lg">
+                      <Link2 className="h-3 w-3 text-blue-600" />
+                    </div>
+                    <span className="text-xs text-blue-700 font-medium">LINE未連携</span>
+                  </div>
+                  <button
+                    onClick={handleGenerateQrCode}
+                    disabled={qrCodeLoading}
+                    className="flex items-center space-x-1 text-xs text-blue-700 hover:text-blue-800 bg-blue-50/80 hover:bg-blue-100/80 px-2 py-1 rounded-lg border border-blue-200/50 transition-all duration-200 backdrop-blur-sm disabled:opacity-50"
+                  >
+                    <QrCode className="h-3 w-3" />
+                    <span>{qrCodeLoading ? "生成中..." : "QR生成"}</span>
+                  </button>
+                </div>
+                
+                {showQrCode && qrCodeData && (
+                  <div className="bg-white/90 p-3 rounded-xl border border-blue-200/50 backdrop-blur-sm">
+                    <div className="text-xs text-blue-800 font-medium mb-2 text-center">
+                      お客様にこのQRコードをお見せください
+                    </div>
+                    <div className="flex justify-center">
+                      <img 
+                        src={qrCodeData} 
+                        alt="LINE友だち追加QRコード" 
+                        className="w-24 h-24 border border-slate-200 rounded-lg"
+                      />
+                    </div>
+                    <div className="text-xs text-slate-600 text-center mt-2">
+                      QRコードを読み取ってLINE友だち追加
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowQrCode(false);
+                      }}
+                      className="w-full mt-2 text-xs text-slate-600 hover:text-slate-800 py-1"
+                    >
+                      閉じる
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

@@ -60,6 +60,13 @@ export const deals = pgTable("deals", {
   myosokuImageUrl: text("myosoku_image_url"),
   myosokuImagePath: text("myosoku_image_path"),
   myosokuUploadedAt: timestamp("myosoku_uploaded_at"),
+  
+  // LINE連携QRコード項目
+  qrCodeToken: text("qr_code_token"),
+  qrCodeUrl: text("qr_code_url"),
+  lineConnectedAt: timestamp("line_connected_at"),
+  lineDisplayName: text("line_display_name"),
+  lineConnectionMethod: text("line_connection_method"), // 'qr', 'auto', 'manual'
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({
@@ -126,6 +133,11 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   // マイソク画像項目
   myosokuImageUrl: z.string().optional(),
   myosokuImagePath: z.string().optional(),
+  // LINE連携QRコード項目
+  qrCodeToken: z.string().optional(),
+  qrCodeUrl: z.string().optional(),
+  lineDisplayName: z.string().optional(),
+  lineConnectionMethod: z.string().optional(),
 });
 
 export type InsertDeal = z.infer<typeof insertDealSchema>;
