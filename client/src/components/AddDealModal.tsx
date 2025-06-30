@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertDealSchema, InsertDeal } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { MyosokuUpload } from "./MyosokuUpload";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,62 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
       notes: "",
     },
   });
+
+  const handleMyosokuUpload = (uploadData: any) => {
+    const { analyzedData, fileUrl, fileName } = uploadData;
+    
+    // AI解析されたデータをフォームにセット
+    if (analyzedData) {
+      // 基本情報
+      if (analyzedData.tenantName) {
+        form.setValue('tenantName', analyzedData.tenantName);
+      }
+      if (analyzedData.tenantAddress) {
+        form.setValue('tenantAddress', analyzedData.tenantAddress);
+      }
+      if (analyzedData.contractDate) {
+        form.setValue('contractDate', analyzedData.contractDate);
+      }
+      
+      // 金額情報
+      if (analyzedData.rentPrice) {
+        form.setValue('rentPrice', analyzedData.rentPrice);
+      }
+      if (analyzedData.managementFee) {
+        form.setValue('managementFee', analyzedData.managementFee);
+      }
+      if (analyzedData.deposit) {
+        form.setValue('deposit', analyzedData.deposit);
+      }
+      if (analyzedData.keyMoney) {
+        form.setValue('keyMoney', analyzedData.keyMoney);
+      }
+      if (analyzedData.brokerage) {
+        form.setValue('brokerage', analyzedData.brokerage);
+      }
+      if (analyzedData.adFee) {
+        form.setValue('adFee', analyzedData.adFee);
+      }
+      
+      // その他の情報
+      if (analyzedData.landlordName) {
+        form.setValue('landlordName', analyzedData.landlordName);
+      }
+      if (analyzedData.landlordAddress) {
+        form.setValue('landlordAddress', analyzedData.landlordAddress);
+      }
+      if (analyzedData.realEstateAgent) {
+        form.setValue('realEstateAgent', analyzedData.realEstateAgent);
+      }
+      if (analyzedData.otherNotes) {
+        form.setValue('notes', analyzedData.otherNotes);
+      }
+    }
+    
+    // マイソク画像の情報を保存
+    form.setValue('myosokuImageUrl', fileUrl);
+    form.setValue('myosokuImagePath', fileName);
+  };
 
   const addDealMutation = useMutation({
     mutationFn: async (data: InsertDeal) => {
@@ -104,23 +161,32 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>案件名 <span className="text-red-500">*</span></FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="例：渋谷区マンション 3LDK"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* マイソクアップロードセクション */}
+            <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+              <MyosokuUpload 
+                onUploadSuccess={handleMyosokuUpload}
+                disabled={addDealMutation.isPending}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>案件名 <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="例：渋谷区マンション 3LDK"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
             <FormField
               control={form.control}

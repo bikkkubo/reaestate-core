@@ -1,7 +1,7 @@
 import { Deal, PRIORITY_COLORS } from "@shared/schema";
 import { format, isAfter, differenceInDays } from "date-fns";
 import { ja } from "date-fns/locale";
-import { Calendar, ExternalLink, Edit3, MessageCircle, CheckCircle2, AlertTriangle, User } from "lucide-react";
+import { Calendar, ExternalLink, Edit3, MessageCircle, CheckCircle2, AlertTriangle, User, FileImage } from "lucide-react";
 
 interface DealCardProps {
   deal: Deal;
@@ -221,6 +221,21 @@ export function DealCard({ deal, isCompleted = false, onEdit, onSendLineMessage 
                 >
                   <ExternalLink className="h-3 w-3" />
                   <span>顧客チェックリスト</span>
+                </a>
+              </div>
+            )}
+
+            {deal.myosokuImageUrl && (
+              <div className="mt-3">
+                <a
+                  href={deal.myosokuImageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 text-xs text-purple-700 hover:text-purple-800 bg-purple-50/80 hover:bg-purple-100/80 px-3 py-2 rounded-xl border border-purple-200/50 transition-all duration-200 backdrop-blur-sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <FileImage className="h-3 w-3" />
+                  <span>マイソク画像</span>
                 </a>
               </div>
             )}

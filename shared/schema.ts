@@ -55,6 +55,11 @@ export const deals = pgTable("deals", {
   
   // 顧客チェックリスト項目
   customerChecklistUrl: text("customer_checklist_url"),
+  
+  // マイソク画像保存項目
+  myosokuImageUrl: text("myosoku_image_url"),
+  myosokuImagePath: text("myosoku_image_path"),
+  myosokuUploadedAt: timestamp("myosoku_uploaded_at"),
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({
@@ -118,6 +123,9 @@ export const insertDealSchema = createInsertSchema(deals).pick({
   followUpOther: z.string().optional(),
   // 顧客チェックリスト項目
   customerChecklistUrl: z.string().optional(),
+  // マイソク画像項目
+  myosokuImageUrl: z.string().optional(),
+  myosokuImagePath: z.string().optional(),
 });
 
 export type InsertDeal = z.infer<typeof insertDealSchema>;

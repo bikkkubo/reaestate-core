@@ -5,6 +5,9 @@ import { insertDealSchema } from "@shared/schema";
 import { z } from "zod";
 import { triggerManualReminders } from "./notifications";
 import { sendDealToLedger, syncCompletedDealsToLedger } from "./ledger";
+import { upload, serveUpload } from "./upload";
+import { analyzeMyosokuImage } from "./vision";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all deals
@@ -253,6 +256,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
       protocol,
       message: "Use this URL in LINE Developers"
     });
+  });
+
+  // マイソクアップロード関連エンドポイント
+  
+  // マイソク画像アップロードとAI解析
+  app.post("/api/myosoku/upload", upload.single('myosoku'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "ファイルがアップロードされていません" });
+      }
+
+      const filePath = req.file.path;
+      const fileName = req.file.filename;
+      
+      // AI解析を実行
+      let analyzedData = {};
+      try {
+        analyzedData = await analyzeMyosokuImage(filePath);
+      } catch (visionError) {
+        console.warn("AI解析エラー:", visionError);
+        // AI解析に失敗してもアップロードは成功とする
+      }
+
+      const fileUrl = `/api/uploads/${fileName}`;
+
+      res.json({
+        success: true,
+        fileUrl,
+        fileName,
+        analyzedData,
+        message: "マイソクがアップロードされ、AI解析が完了しました"
+      });
+    } catch (error) {
+      console.error("マイソクアップロードエラー:", error);
+      res.status(500).json({ error: "ファイルのアップロードに失敗しました" });
+    }
+  });
+
+  // アップロードされたファイルを提供
+  app.get("/api/uploads/:filename", serveUpload);
+
+  // 案件にマイソク情報を更新
+  app.patch("/api/deals/:id/myosoku", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id);
+      const { myosokuImageUrl, myosokuImagePath, ...myosokuData } = req.body;
+
+      if (isNaN(dealId)) {
+        return res.status(400).json({ message: "Invalid deal ID" });
+      }
+
+      // 案件を更新（マイソクデータとファイル情報を含む）
+      const updatedData = {
+        ...myosokuData,
+        myosokuImageUrl,
+        myosokuImagePath,
+        myosokuUploadedAt: new Date()
+      };
+
+      const deal = await storage.updateDeal(dealId, updatedData);
+      res.json(deal);
+    } catch (error) {
+      console.error("マイソク情報更新エラー:", error);
+      res.status(500).json({ message: "マイソク情報の更新に失敗しました" });
+    }
   });
 
   // 全リクエストをログ出力（完全デバッグ）
