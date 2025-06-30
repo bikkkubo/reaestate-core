@@ -522,6 +522,7 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
                 )}
               </Button>
             </div>
+            </div>
           </form>
         </Form>
       </DialogContent>
