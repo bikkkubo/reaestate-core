@@ -23,19 +23,10 @@ export function KanbanBoard() {
 
   const { data: deals = [], isLoading } = useQuery<Deal[]>({
     queryKey: ["/api/deals"],
-    refetchInterval: 5000, // 5秒ごとにデータを更新
-    refetchIntervalInBackground: true, // バックグラウンドでも更新
+    refetchInterval: 30000, // 30秒ごとにデータを更新（頻度を下げる）
+    refetchIntervalInBackground: false, // バックグラウンドでの自動更新を無効化
     refetchOnWindowFocus: true, // ウィンドウフォーカス時に更新
   });
-
-  // LINE連携の状態変化を監視
-  useEffect(() => {
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ["/api/deals"] });
-    }, 3000); // 3秒ごとにキャッシュを無効化
-
-    return () => clearInterval(interval);
-  }, [queryClient]);
 
   const updatePhaseMutation = useMutation({
     mutationFn: async ({ id, phase }: { id: number; phase: Phase }) => {
