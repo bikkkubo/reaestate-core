@@ -104,7 +104,7 @@ export async function analyzeMyosokuImage(imagePath: string): Promise<MyosokuDat
         const value = extractedData[field];
         if (typeof value === 'string') {
           const parsed = parseInt(value.replace(/[^\d]/g, ''));
-          extractedData[field] = isNaN(parsed) ? 0 : parsed;
+          (extractedData as any)[field] = isNaN(parsed) ? 0 : parsed;
         }
       }
     });

@@ -3,8 +3,10 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// アップロードディレクトリを作成
-const uploadDir = path.join(process.cwd(), "uploads");
+// アップロードディレクトリを作成（Netlify対応）
+const isNetlify = process.env.NETLIFY === 'true';
+const uploadDir = isNetlify ? '/tmp/uploads' : path.join(process.cwd(), "uploads");
+
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

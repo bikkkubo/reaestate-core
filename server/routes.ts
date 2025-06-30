@@ -261,37 +261,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // マイソクアップロード関連エンドポイント
   
-  // マイソク画像アップロードとAI解析
+  // マイソク画像アップロードとAI解析（Base64対応）
+  app.post("/api/myosoku/upload-base64", async (req, res) => {
+    try {
+      console.log("📤 Myosoku base64 upload request received");
+      
+      const { imageData, fileName, mimeType } = req.body;
+      
+      if (!imageData || !fileName) {
+        return res.status(400).json({ error: "画像データまたはファイル名が提供されていません" });
+      }
+
+      // Base64データをBufferに変換
+      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      // ファイル拡張子の取得
+      const ext = path.extname(fileName) || '.jpg';
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const finalFileName = `myosoku-${uniqueSuffix}${ext}`;
+      
+      // 一時的にファイルを保存（AI解析用）
+      const isNetlify = process.env.NETLIFY === 'true';
+      const tempDir = isNetlify ? '/tmp' : path.join(process.cwd(), "uploads");
+      const tempFilePath = path.join(tempDir, finalFileName);
+      
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+      
+      fs.writeFileSync(tempFilePath, buffer);
+      console.log("📁 File saved temporarily:", tempFilePath);
+      
+      // AI解析を実行
+      let analyzedData = {};
+      try {
+        console.log("🤖 Starting AI analysis...");
+        
+        if (!process.env.OPENAI_API_KEY) {
+          console.warn("⚠️ OPENAI_API_KEY not configured, skipping AI analysis");
+          analyzedData = { error: "AI解析はOpenAI API keyが設定されていないためスキップされました" };
+        } else {
+          analyzedData = await analyzeMyosokuImage(tempFilePath);
+          console.log("✅ AI analysis completed:", analyzedData);
+        }
+      } catch (visionError) {
+        console.warn("⚠️ AI解析エラー:", visionError);
+        analyzedData = { 
+          error: "AI解析に失敗しました", 
+          details: visionError instanceof Error ? visionError.message : '不明なエラー'
+        };
+      } finally {
+        // 一時ファイルを削除
+        try {
+          fs.unlinkSync(tempFilePath);
+        } catch (cleanupError) {
+          console.warn("Cleanup error:", cleanupError);
+        }
+      }
+
+      res.json({
+        success: true,
+        fileName: finalFileName,
+        imageData: `data:${mimeType};base64,${base64Data}`,
+        analyzedData,
+        message: "マイソクが処理されました" + (analyzedData.error ? "（AI解析はスキップされました）" : "（AI解析が完了しました）")
+      });
+    } catch (error) {
+      console.error("❌ マイソクBase64アップロードエラー:", error);
+      
+      const errorMessage = error instanceof Error ? error.message : "画像の処理に失敗しました";
+      res.status(500).json({ 
+        error: errorMessage,
+        type: "Base64UploadError"
+      });
+    }
+  });
+
+  // マイソク画像アップロードとAI解析（従来のmulter方式）
   app.post("/api/myosoku/upload", upload.single('myosoku'), async (req, res) => {
     try {
+      console.log("📤 Myosoku upload request received");
+      console.log("📄 File info:", req.file ? {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      } : 'No file');
+
       if (!req.file) {
+        console.error("❌ No file uploaded");
         return res.status(400).json({ error: "ファイルがアップロードされていません" });
       }
 
       const filePath = req.file.path;
       const fileName = req.file.filename;
       
+      console.log("📁 File saved:", { filePath, fileName });
+      
       // AI解析を実行
       let analyzedData = {};
       try {
-        analyzedData = await analyzeMyosokuImage(filePath);
+        console.log("🤖 Starting AI analysis...");
+        
+        // OpenAI API keyチェック
+        if (!process.env.OPENAI_API_KEY) {
+          console.warn("⚠️ OPENAI_API_KEY not configured, skipping AI analysis");
+          analyzedData = { error: "AI解析はOpenAI API keyが設定されていないためスキップされました" };
+        } else {
+          analyzedData = await analyzeMyosokuImage(filePath);
+          console.log("✅ AI analysis completed:", analyzedData);
+        }
       } catch (visionError) {
-        console.warn("AI解析エラー:", visionError);
-        // AI解析に失敗してもアップロードは成功とする
+        console.warn("⚠️ AI解析エラー:", visionError);
+        analyzedData = { 
+          error: "AI解析に失敗しました", 
+          details: visionError instanceof Error ? visionError.message : '不明なエラー'
+        };
       }
 
       const fileUrl = `/api/uploads/${fileName}`;
+
+      console.log("📋 Upload result:", { fileUrl, fileName, analyzedData });
 
       res.json({
         success: true,
         fileUrl,
         fileName,
         analyzedData,
-        message: "マイソクがアップロードされ、AI解析が完了しました"
+        message: "マイソクがアップロードされました" + (analyzedData.error ? "（AI解析はスキップされました）" : "（AI解析が完了しました）")
       });
     } catch (error) {
-      console.error("マイソクアップロードエラー:", error);
-      res.status(500).json({ error: "ファイルのアップロードに失敗しました" });
+      console.error("❌ マイソクアップロードエラー:", error);
+      
+      // より詳細なエラー情報を返す
+      const errorMessage = error instanceof Error ? error.message : "ファイルのアップロードに失敗しました";
+      const errorDetails = {
+        error: errorMessage,
+        type: error instanceof Error ? error.constructor.name : 'Unknown',
+        details: error instanceof Error ? error.stack : String(error)
+      };
+      
+      console.error("📊 Error details:", errorDetails);
+      res.status(500).json(errorDetails);
     }
   });
 

@@ -3,8 +3,10 @@ import { randomBytes } from "crypto";
 import fs from "fs";
 import path from "path";
 
-// QRコード画像保存ディレクトリ
-const qrCodeDir = path.join(process.cwd(), "uploads", "qr");
+// QRコード画像保存ディレクトリ（Netlify対応）
+const isNetlify = process.env.NETLIFY === 'true';
+const qrCodeDir = isNetlify ? '/tmp/uploads/qr' : path.join(process.cwd(), "uploads", "qr");
+
 if (!fs.existsSync(qrCodeDir)) {
   fs.mkdirSync(qrCodeDir, { recursive: true });
 }

@@ -47,40 +47,54 @@ export function MyosokuUpload({ onUploadSuccess, disabled = false }: MyosokuUplo
     setUploadStatus('uploading');
 
     try {
-      const formData = new FormData();
-      formData.append('myosoku', file);
-
-      const response = await fetch('/api/myosoku/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('アップロードに失敗しました');
-      }
-
-      const result = await response.json();
+      // Base64方式でのアップロードを試行
+      const result = await uploadAsBase64(file);
       
-      setUploadStatus('success');
-      toast({
-        title: "成功",
-        description: "マイソクがアップロードされ、AI解析が完了しました",
-      });
+      if (result.success) {
+        setUploadStatus('success');
+        toast({
+          title: "成功",
+          description: result.message || "マイソクがアップロードされ、AI解析が完了しました",
+        });
 
-      onUploadSuccess({
-        fileUrl: result.fileUrl,
-        fileName: result.fileName,
-        analyzedData: result.analyzedData || {}
-      });
+        onUploadSuccess({
+          fileUrl: result.imageData,
+          fileName: result.fileName,
+          analyzedData: result.analyzedData || {}
+        });
+      } else {
+        throw new Error(result.error || 'アップロードに失敗しました');
+      }
 
     } catch (error) {
       console.error('Upload error:', error);
-      setUploadStatus('error');
-      toast({
-        title: "エラー",
-        description: error instanceof Error ? error.message : "アップロードに失敗しました",
-        variant: "destructive",
-      });
+      
+      // フォールバック: 従来のFormData方式を試行
+      try {
+        console.log('Trying fallback FormData upload...');
+        const fallbackResult = await uploadAsFormData(file);
+        
+        setUploadStatus('success');
+        toast({
+          title: "成功",
+          description: fallbackResult.message || "マイソクがアップロードされ、AI解析が完了しました",
+        });
+
+        onUploadSuccess({
+          fileUrl: fallbackResult.fileUrl,
+          fileName: fallbackResult.fileName,
+          analyzedData: fallbackResult.analyzedData || {}
+        });
+        
+      } catch (fallbackError) {
+        console.error('Fallback upload also failed:', fallbackError);
+        setUploadStatus('error');
+        toast({
+          title: "エラー",
+          description: error instanceof Error ? error.message : "アップロードに失敗しました",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsUploading(false);
       // Reset file input
@@ -88,6 +102,58 @@ export function MyosokuUpload({ onUploadSuccess, disabled = false }: MyosokuUplo
         fileInputRef.current.value = '';
       }
     }
+  };
+
+  const uploadAsBase64 = async (file: File): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string;
+          
+          const response = await fetch('/api/myosoku/upload-base64', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              imageData: base64Data,
+              fileName: file.name,
+              mimeType: file.type
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Base64アップロードに失敗しました');
+          }
+
+          const result = await response.json();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('ファイル読み込みに失敗しました'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const uploadAsFormData = async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('myosoku', file);
+
+    const response = await fetch('/api/myosoku/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'FormDataアップロードに失敗しました');
+    }
+
+    return await response.json();
   };
 
   const handleUploadClick = () => {
