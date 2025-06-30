@@ -3,6 +3,7 @@ import { KanbanBoard } from "@/components/KanbanBoard";
 import { AddDealModal } from "@/components/AddDealModal";
 import { TemplateManagerModal } from "@/components/TemplateManagerModal";
 import { Button } from "@/components/ui/button";
+import { Building2, Settings, RefreshCw, Bell, Plus, CheckCircle } from "lucide-react";
 
 export default function Home() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -10,32 +11,41 @@ export default function Home() {
   const [templateUpdateKey, setTemplateUpdateKey] = useState(0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-white/20 sticky top-0 z-40 shadow-lg shadow-slate-200/50">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <i className="fas fa-building text-blue-600 text-xl"></i>
-                <h1 className="text-xl font-semibold text-gray-900">不動産賃貸管理</h1>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                  <Building2 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                    不動産賃貸管理
+                  </h1>
+                  <p className="text-xs text-slate-500 font-medium">案件進捗管理システム</p>
+                </div>
               </div>
-              <span className="text-sm text-gray-500 hidden sm:block">案件進捗管理システム</span>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>同期完了</span>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+                <CheckCircle className="h-3 w-3 text-emerald-500" />
+                <span className="text-xs font-medium text-emerald-700">同期完了</span>
               </div>
+              
               <Button
                 onClick={() => setIsTemplateManagerOpen(true)}
                 variant="outline"
-                className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                size="sm"
+                className="border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 shadow-sm"
               >
-                <i className="fas fa-cog text-sm mr-2"></i>
+                <Settings className="h-4 w-4 mr-2" />
                 <span className="hidden sm:block">テンプレート管理</span>
               </Button>
+              
               <Button
                 onClick={async () => {
                   try {
@@ -47,11 +57,13 @@ export default function Home() {
                   }
                 }}
                 variant="outline"
-                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                size="sm"
+                className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm"
               >
-                <i className="fas fa-sync text-sm mr-2"></i>
+                <RefreshCw className="h-4 w-4 mr-2" />
                 <span className="hidden sm:block">取引台帳同期</span>
               </Button>
+              
               <Button
                 onClick={async () => {
                   try {
@@ -63,17 +75,20 @@ export default function Home() {
                   }
                 }}
                 variant="outline"
-                className="text-orange-600 border-orange-600 hover:bg-orange-50"
+                size="sm"
+                className="border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300 shadow-sm"
               >
-                <i className="fas fa-bell text-sm mr-2"></i>
+                <Bell className="h-4 w-4 mr-2" />
                 <span className="hidden sm:block">Slack通知テスト</span>
               </Button>
+              
               <Button
                 onClick={() => setIsAddModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                size="sm"
               >
-                <i className="fas fa-plus text-sm"></i>
-                <span className="hidden sm:block">新規案件</span>
+                <Plus className="h-4 w-4 mr-2" />
+                <span className="hidden sm:block font-medium">新規案件</span>
               </Button>
             </div>
           </div>

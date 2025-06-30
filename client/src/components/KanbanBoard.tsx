@@ -9,6 +9,7 @@ import { LineNotificationModal } from "./LineNotificationModal";
 import { ManualLineMessageModal } from "./ManualLineMessageModal";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Users, Clock, AlertTriangle, Heart, CheckCircle } from "lucide-react";
 
 export function KanbanBoard() {
   const { toast } = useToast();
@@ -125,64 +126,74 @@ export function KanbanBoard() {
   return (
     <div className="w-full">
       {/* Stats Bar */}
-      <div className="px-4 py-4">
-        <div className="mb-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">総顧客数</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+      <div className="px-4 py-6">
+        <div className="mb-8 grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">総顧客数</p>
+                <p className="text-3xl font-bold text-slate-900">{stats.total}</p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                <Users className="h-6 w-6 text-white" />
+              </div>
             </div>
-            <i className="fas fa-users text-blue-500 text-xl"></i>
           </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">進行中</p>
-              <p className="text-2xl font-semibold text-blue-600">{stats.inProgress}</p>
+          
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">進行中</p>
+                <p className="text-3xl font-bold text-blue-600">{stats.inProgress}</p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl shadow-lg">
+                <Clock className="h-6 w-6 text-white" />
+              </div>
             </div>
-            <i className="fas fa-clock text-blue-500 text-xl"></i>
           </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">期限超過</p>
-              <p className="text-2xl font-semibold text-red-600">{stats.overdue}</p>
+          
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">期限超過</p>
+                <p className="text-3xl font-bold text-red-600">{stats.overdue}</p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg">
+                <AlertTriangle className="h-6 w-6 text-white" />
+              </div>
             </div>
-            <i className="fas fa-exclamation-triangle text-red-500 text-xl"></i>
           </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">フォローアップ</p>
-              <p className="text-2xl font-semibold text-purple-600">{stats.followUp}</p>
+          
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">フォローアップ</p>
+                <p className="text-3xl font-bold text-purple-600">{stats.followUp}</p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
+                <Heart className="h-6 w-6 text-white" />
+              </div>
             </div>
-            <i className="fas fa-heart text-purple-500 text-xl"></i>
           </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">完了</p>
-              <p className="text-2xl font-semibold text-green-600">{stats.completed}</p>
+          
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-white/50 hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">完了</p>
+                <p className="text-3xl font-bold text-emerald-600">{stats.completed}</p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+                <CheckCircle className="h-6 w-6 text-white" />
+              </div>
             </div>
-            <i className="fas fa-check-circle text-green-500 text-xl"></i>
           </div>
-        </div>
         </div>
       </div>
 
       {/* Kanban Board */}
-      <div className="w-full overflow-x-auto pb-4">
+      <div className="w-full overflow-x-auto pb-6">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex space-x-4 min-w-max px-4">
+          <div className="flex space-x-6 min-w-max px-4">
             {PHASES.map((phase) => {
               const phaseDeals = getDealsByPhase(phase);
               const isCompleted = phase === "⑫AD請求/着金";
@@ -192,23 +203,23 @@ export function KanbanBoard() {
               return (
                 <div
                   key={phase}
-                  className="flex-shrink-0 w-80 bg-white rounded-lg shadow-sm border border-gray-200"
+                  className="flex-shrink-0 w-80 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg shadow-slate-200/50 border border-white/50"
                 >
-                  <div className={`p-4 border-b border-gray-200 rounded-t-lg ${
-                    isCompleted ? "bg-green-50" : 
-                    isFollowUp ? "bg-purple-50" :
-                    isContractEnd ? "bg-blue-50" : "bg-gray-50"
+                  <div className={`p-5 border-b border-white/30 rounded-t-2xl ${
+                    isCompleted ? "bg-gradient-to-r from-emerald-100/80 to-emerald-50/80" : 
+                    isFollowUp ? "bg-gradient-to-r from-purple-100/80 to-purple-50/80" :
+                    isContractEnd ? "bg-gradient-to-r from-blue-100/80 to-blue-50/80" : "bg-gradient-to-r from-slate-100/80 to-slate-50/80"
                   }`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900">{phase}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      <h3 className="font-bold text-slate-900 text-sm">{phase}</h3>
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-sm ${
                         isCompleted 
-                          ? "bg-green-200 text-green-800" 
+                          ? "bg-emerald-200/80 text-emerald-800 border border-emerald-300/50" 
                           : isFollowUp
-                          ? "bg-purple-200 text-purple-800"
+                          ? "bg-purple-200/80 text-purple-800 border border-purple-300/50"
                           : isContractEnd
-                          ? "bg-blue-200 text-blue-800"
-                          : "bg-gray-200 text-gray-700"
+                          ? "bg-blue-200/80 text-blue-800 border border-blue-300/50"
+                          : "bg-slate-200/80 text-slate-700 border border-slate-300/50"
                       }`}>
                         {phaseDeals.length}
                       </span>
@@ -220,13 +231,18 @@ export function KanbanBoard() {
                       <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className={`p-3 space-y-3 min-h-96 transition-colors ${
-                          snapshot.isDraggingOver ? "bg-blue-50" : ""
+                        className={`p-4 space-y-4 min-h-96 transition-all duration-300 rounded-b-2xl ${
+                          snapshot.isDraggingOver ? "bg-blue-100/30 backdrop-blur-sm" : ""
                         }`}
                       >
                         {phaseDeals.length === 0 ? (
-                          <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
-                            {isCompleted ? "完了済み案件はありません" : "カードをここにドロップ"}
+                          <div className="flex flex-col items-center justify-center h-32 text-slate-500 text-sm">
+                            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+                              <div className="w-6 h-6 border-2 border-dashed border-slate-400 rounded"></div>
+                            </div>
+                            <p className="font-medium">
+                              {isCompleted ? "完了済み案件はありません" : "カードをここにドロップ"}
+                            </p>
                           </div>
                         ) : (
                           phaseDeals.map((deal, index) => (
@@ -240,8 +256,8 @@ export function KanbanBoard() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`${
-                                    snapshot.isDragging ? "rotate-3 opacity-80" : ""
+                                  className={`transform transition-all duration-200 ${
+                                    snapshot.isDragging ? "rotate-6 scale-105 shadow-2xl z-50" : "hover:scale-102"
                                   }`}
                                 >
                                   <DealCard 
